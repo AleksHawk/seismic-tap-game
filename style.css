@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at center, #2b1040 0%, #000000 100%);
+    color: white;
+    font-family: 'Chakra Petch', sans-serif;
+    overflow: hidden; /* Забороняємо скрол */
+    height: 100vh;
+    user-select: none; /* Щоб текст не виділявся при швидкому кліку */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- HEADER --- */
+header {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.stats-box {
+    text-align: center;
+}
+
+.label {
+    font-size: 12px;
+    color: #a855f7;
+    display: block;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #a855f7;
+}
+
+.logo-title {
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #fff;
+    opacity: 0.5;
+}
+
+/* --- GAME AREA --- */
+.click-area {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.character-wrapper {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mascot {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+    transition: transform 0.05s;
+}
+
+/* Ефект збільшення при кліку */
+.mascot.active {
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.8));
+}
+
+.start-hint {
+    margin-top: 20px;
+    font-size: 18px;
+    animation: blink 1s infinite;
+    color: #e9d5ff;
+}
+
+@keyframes blink { 50% { opacity: 0.5; } }
+
+/* --- PARTICLES (Іскри) --- */
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 10px #d8b4fe;
+}
+
+/* --- SHAKE ANIMATION (Тремтіння екрану) --- */
+.shake {
+    animation: shakeAnim 0.2s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shakeAnim {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* --- FOOTER --- */
+footer {
+    padding-bottom: 20px;
+    font-size: 12px;
+    color: #666;
+}
+
+footer a { color: #a855f7; text-decoration: none; }
+
+/* --- MODAL --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: linear-gradient(145deg, #1e1e24, #121212);
+    border: 2px solid #a855f7;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(168, 85, 247, 0.4);
+    width: 80%;
+    max-width: 350px;
+    animation: popIn 0.3s ease;
+}
+
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.final-score {
+    font-size: 60px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1;
+    margin: 20px 0;
+    text-shadow: 0 0 20px #a855f7;
+}
+
+.final-score small {
+    display: block;
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.rank-text {
+    font-size: 20px;
+    color: #d8b4fe;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.action-buttons button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+.btn-retry { background: #333; color: white; }
+.btn-share { background: #a855f7; color: white; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
