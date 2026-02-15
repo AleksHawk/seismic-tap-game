@@ -2,19 +2,19 @@ body {
     margin: 0;
     padding: 0;
     background-color: #000;
-    color: #a855f7; /* Seismic Purple */
+    color: #a855f7;
     font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
     height: 100vh;
     user-select: none;
 }
 
-/* --- МАТРИЦЯ НА ФОНІ --- */
+/* --- МАТРИЦЯ --- */
 #matrixCanvas {
     position: fixed;
     top: 0; left: 0;
     z-index: 0;
-    opacity: 0.15; /* Щоб не заважало читати */
+    opacity: 0.15;
 }
 
 /* --- ЕФЕКТИ ЕКРАНУ --- */
@@ -42,7 +42,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 20; /* Поверх матриці */
+    z-index: 20;
 }
 
 .screen {
@@ -65,8 +65,39 @@ body {
     animation: pulse 2s infinite;
 }
 
+/* --- ПРАВИЛА ГРИ (НОВЕ) --- */
+.mission-box {
+    border: 1px dashed #444;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    margin: 20px 0;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mission-title {
+    color: #22c55e; /* Green title */
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+.mission-list {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.mission-list li {
+    margin-bottom: 5px;
+}
+
 .login-box {
-    margin-top: 30px;
+    margin-top: 10px;
     width: 100%;
 }
 
@@ -155,11 +186,25 @@ input[type="text"]:focus {
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
 }
 
-#questionText { margin: 0; color: #fff; font-size: 20px; line-height: 1.4; }
+.question-label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+#questionText { 
+    margin: 0; 
+    color: #fff; 
+    font-size: 20px; 
+    line-height: 1.4;
+    white-space: pre-wrap; 
+    letter-spacing: 1px;
+}
 
 .answers-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Одна колонка для мобільних краще */
+    grid-template-columns: 1fr;
     gap: 10px;
     width: 100%;
 }
@@ -197,11 +242,10 @@ input[type="text"]:focus {
     display: flex; justify-content: space-between;
     padding: 5px 0; border-bottom: 1px dashed #333;
 }
-#leaderboardList li.user-score { color: #22c55e; font-weight: bold; } /* Підсвічуємо юзера */
+#leaderboardList li.user-score { color: #22c55e; font-weight: bold; }
 
 .highlight { font-size: 32px; color: #fff; text-shadow: 0 0 10px #a855f7; }
 
-/* Анімації */
 .shake { animation: shakeAnim 0.4s; }
 @keyframes shakeAnim { 0%{transform:translate(0,0)} 25%{transform:translate(-5px,0)} 50%{transform:translate(5px,0)} 75%{transform:translate(-5px,0)} 100%{transform:translate(0,0)} }
 
