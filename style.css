@@ -1,31 +1,38 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #050505;
-    color: #a855f7; /* Neon Purple */
+    background-color: #000;
+    color: #a855f7; /* Seismic Purple */
     font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
     height: 100vh;
     user-select: none;
 }
 
-/* --- ЕФЕКТИ ЕКРАНУ (CRT) --- */
+/* --- МАТРИЦЯ НА ФОНІ --- */
+#matrixCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 0;
+    opacity: 0.15; /* Щоб не заважало читати */
+}
+
+/* --- ЕФЕКТИ ЕКРАНУ --- */
 .scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%);
     background-size: 100% 4px;
     pointer-events: none;
     z-index: 10;
 }
 
-.noise {
+.vignette {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.3.0/paper.css') repeat; 
-    opacity: 0.05;
-    pointer-events: none;
+    background: radial-gradient(circle, transparent 60%, black 100%);
     z-index: 9;
+    pointer-events: none;
 }
 
 .game-wrapper {
@@ -35,7 +42,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 5;
+    z-index: 20; /* Поверх матриці */
 }
 
 .screen {
@@ -43,136 +50,159 @@ body {
     flex-direction: column;
     align-items: center;
     width: 90%;
-    max-width: 600px;
+    max-width: 500px;
     text-align: center;
 }
 
-.screen.active { display: flex; }
+.screen.active { display: flex; animation: fadeIn 0.5s; }
 
-/* --- СТАРТ --- */
+@keyframes fadeIn { from{opacity:0; transform: scale(0.95);} to{opacity:1; transform: scale(1);} }
+
+/* --- ЛОГІН --- */
 .logo-pulse {
     width: 100px;
+    filter: drop-shadow(0 0 15px #a855f7);
     animation: pulse 2s infinite;
-    filter: drop-shadow(0 0 10px #a855f7);
+}
+
+.login-box {
+    margin-top: 30px;
+    width: 100%;
+}
+
+input[type="text"] {
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #555;
+    color: #fff;
+    padding: 15px;
+    font-size: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    text-align: center;
+    width: 80%;
     margin-bottom: 20px;
-}
-@keyframes pulse { 0%{opacity:0.7} 50%{opacity:1; transform:scale(1.05)} 100%{opacity:0.7} }
-
-.glitch {
-    font-size: 40px;
-    position: relative;
-    color: white;
-    text-shadow: 2px 2px #a855f7;
+    outline: none;
+    text-transform: uppercase;
+    transition: 0.3s;
 }
 
-.status { color: #666; margin-bottom: 40px; font-size: 14px; letter-spacing: 2px; }
+input[type="text"]:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
 
+/* --- КНОПКИ --- */
 .btn-hack {
     background: transparent;
     border: 2px solid #a855f7;
     color: #a855f7;
-    padding: 15px 30px;
-    font-size: 20px;
+    padding: 12px 30px;
+    font-size: 18px;
     font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
-    transition: 0.2s;
     text-transform: uppercase;
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+    transition: 0.2s;
+    letter-spacing: 2px;
 }
 
 .btn-hack:hover {
     background: #a855f7;
     color: black;
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 20px #a855f7;
 }
 
-/* --- ГРА UI --- */
+.btn-share {
+    background: white; color: black; border: none;
+    padding: 12px 30px; font-size: 18px; font-weight: bold;
+    cursor: pointer; font-family: 'Share Tech Mono', monospace;
+}
+
+/* --- GAME UI --- */
 .hud {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    font-size: 20px;
-    margin-bottom: 10px;
-    text-shadow: 0 0 5px #a855f7;
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #ccc;
+    text-transform: uppercase;
 }
+
+#scoreVal { color: #22c55e; font-weight: bold; }
 
 .timer-container {
     width: 100%;
-    height: 10px;
-    background: #222;
-    margin-bottom: 30px;
-    border: 1px solid #444;
+    height: 8px;
+    background: #333;
+    margin-bottom: 20px;
+    border: 1px solid #555;
 }
 
 .timer-bar {
     width: 100%;
     height: 100%;
-    background: #22c55e; /* Green start */
-    transition: width 0.1s linear, background 0.3s;
-    box-shadow: 0 0 10px #22c55e;
+    background: #a855f7;
+    box-shadow: 0 0 10px #a855f7;
+    transition: width 0.1s linear;
 }
-
-.timer-low { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
 
 .question-box {
-    margin-bottom: 30px;
     border: 1px solid #a855f7;
     padding: 20px;
-    background: rgba(168, 85, 247, 0.1);
+    background: rgba(16, 0, 30, 0.8);
     width: 100%;
-    box-sizing: border-box;
+    margin-bottom: 20px;
     backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
 }
 
-.question-label { color: #666; font-size: 12px; margin-bottom: 10px; }
-#questionText { margin: 0; color: white; font-size: 22px; line-height: 1.4; }
+#questionText { margin: 0; color: #fff; font-size: 20px; line-height: 1.4; }
 
 .answers-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    grid-template-columns: 1fr; /* Одна колонка для мобільних краще */
+    gap: 10px;
     width: 100%;
 }
 
 .ans-btn {
-    background: rgba(0,0,0,0.5);
-    border: 1px solid #555;
-    color: #ccc;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #444;
+    color: #eee;
     padding: 15px;
     cursor: pointer;
     font-family: 'Share Tech Mono', monospace;
     font-size: 16px;
     transition: 0.2s;
+    text-align: left;
 }
 
-.ans-btn:hover { border-color: #a855f7; color: white; }
-.ans-btn:active { transform: scale(0.98); }
-
+.ans-btn:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
 .ans-correct { background: #064e3b !important; border-color: #22c55e !important; color: white !important; }
 .ans-wrong { background: #450a0a !important; border-color: #ef4444 !important; color: white !important; }
 
-/* --- ANIMATIONS --- */
-.shake-screen { animation: shake 0.5s; }
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+/* --- ЛІДЕРБОРД --- */
+.leaderboard {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    padding: 10px;
+    margin: 20px 0;
+    text-align: left;
 }
 
-/* --- END SCREEN --- */
-.final-stats { font-size: 24px; margin: 20px 0; color: white; }
-.rank { color: #a855f7; font-weight: bold; font-size: 32px; margin-top: 10px; }
-.mascot-hidden { width: 150px; margin-bottom: 20px; display: none; }
-.btn-share {
-    background: white; color: black; border: none; padding: 15px 30px;
-    font-family: 'Share Tech Mono', monospace; cursor: pointer; margin-top: 10px;
-    font-weight: bold;
+.leaderboard h3 { margin: 0 0 10px 0; color: #a855f7; border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+#leaderboardList { list-style: none; padding: 0; margin: 0; font-size: 14px; }
+#leaderboardList li {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px dashed #333;
 }
+#leaderboardList li.user-score { color: #22c55e; font-weight: bold; } /* Підсвічуємо юзера */
+
+.highlight { font-size: 32px; color: #fff; text-shadow: 0 0 10px #a855f7; }
+
+/* Анімації */
+.shake { animation: shakeAnim 0.4s; }
+@keyframes shakeAnim { 0%{transform:translate(0,0)} 25%{transform:translate(-5px,0)} 50%{transform:translate(5px,0)} 75%{transform:translate(-5px,0)} 100%{transform:translate(0,0)} }
+
+@keyframes pulse { 0%{opacity:0.8} 50%{opacity:1} 100%{opacity:0.8} }
