@@ -3,44 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seismic Geode Breaker</title>
+    <title>Seismic Runner</title>
     <link rel="icon" type="image/png" href="images/stone.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="game-wrapper">
-        <header>
-            <div class="logo-text">SEISMIC GEODE</div>
-            <div class="counter">OPENED: <span id="count">0</span></div>
-        </header>
-
-        <div class="geode-container">
-            <div class="glow-bg"></div>
-            <img src="images/stone.png" id="mainImage" class="floating">
-            <div class="flash-overlay" id="flash"></div>
+    <div class="game-container">
+        <div class="ui-layer">
+            <div class="score-board">SCORE: <span id="score">0</span></div>
+            <div class="high-score">BEST: <span id="highScore">0</span></div>
         </div>
 
-        <div class="controls">
-            <button id="breakBtn" onclick="breakGeode()">BREAK GEODE 🔨</button>
-            <p id="hint">Click to reveal your prize</p>
-        </div>
+        <canvas id="gameCanvas"></canvas>
 
-        <footer>
-            Created by <a href="https://x.com/AleksYastreb" target="_blank">@Hawk</a>
-        </footer>
-    </div>
-
-    <div class="modal-overlay" id="modal">
-        <div class="modal-box" id="modalBox">
-            <div class="rarity-badge" id="rarityBadge">LEGENDARY</div>
-            <img src="" id="prizeImage" class="prize-img">
-            <h2 id="prizeName">Seismic Core</h2>
-            
-            <div class="modal-buttons">
-                <button onclick="resetGame()" class="btn-retry">OPEN ANOTHER</button>
-                <button onclick="shareResult()" class="btn-share">SHARE ON X 🚀</button>
-            </div>
+        <div class="overlay" id="overlay">
+            <h1 class="title">SEISMIC RUN</h1>
+            <p class="subtitle">TAP or SPACE to Jump</p>
+            <p class="final-score" id="finalScoreText" style="display:none;">SCORE: 0</p>
+            <button class="btn" onclick="startGame()">START RUN 🚀</button>
+            <button class="btn share-btn" id="shareBtn" style="display:none;" onclick="shareResult()">SHARE RESULT</button>
         </div>
     </div>
 
