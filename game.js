@@ -20,7 +20,7 @@ function drawMatrix() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = '#a855f7'; // Purple text
+    ctx.fillStyle = '#a855f7';
     ctx.font = fontSize + 'px monospace';
 
     for(let i = 0; i < drops.length; i++) {
@@ -59,7 +59,6 @@ let timeLeft;
 let maxTime = 15;
 let gameActive = false;
 
-// DOM Elements
 const screens = {
     login: document.getElementById('loginScreen'),
     game: document.getElementById('gameScreen'),
@@ -85,12 +84,9 @@ function submitLogin() {
     
     if(name.length > 0) {
         currentUser = name;
-        // Зберігаємо юзера
         localStorage.setItem('seismic_last_user', currentUser);
-        
         screens.login.classList.remove('active');
         screens.game.classList.add('active');
-        
         startGame();
     } else {
         input.style.borderColor = 'red';
@@ -98,7 +94,6 @@ function submitLogin() {
     }
 }
 
-// Перевірка, чи є збережений юзер
 window.onload = () => {
     const savedUser = localStorage.getItem('seismic_last_user');
     if(savedUser) document.getElementById('usernameInput').value = savedUser;
@@ -111,7 +106,6 @@ function startGame() {
     maxTime = 15;
     currentQIndex = 0;
     
-    // Перемішуємо питання
     currentQuestions = [...questionBank].sort(() => 0.5 - Math.random());
     
     updateHUD();
@@ -135,12 +129,10 @@ function loadQuestion() {
     const qData = currentQuestions[currentQIndex];
     ui.qNum.innerText = currentQIndex + 1;
     
-    // Ефект друкування тексту
     typeWriter(qData.q, ui.questionText);
     
     ui.answersGrid.innerHTML = '';
     
-    // Кнопки
     qData.a.forEach((ans, index) => {
         const btn = document.createElement('button');
         btn.innerText = ans;
@@ -152,14 +144,13 @@ function loadQuestion() {
     resetTimer();
 }
 
-// Ефект друкарської машинки
 function typeWriter(text, element) {
-    element.innerText = "";
+    element.textContent = ""; 
     let i = 0;
-    const speed = 20; 
+    const speed = 30; 
     function type() {
         if (i < text.length) {
-            element.innerText += text.charAt(i);
+            element.textContent += text.charAt(i);
             i++;
             setTimeout(type, speed);
         }
@@ -169,7 +160,6 @@ function typeWriter(text, element) {
 
 function resetTimer() {
     clearInterval(timer);
-    // Час зменшується з кожним питанням
     timeLeft = Math.max(4, maxTime - (currentQIndex * 0.8)); 
     ui.timerBar.style.width = "100%";
     ui.timerBar.style.backgroundColor = "#a855f7";
@@ -197,7 +187,7 @@ function checkAnswer(selected, correct) {
 
     if(selected === correct) {
         btns[selected].classList.add('ans-correct');
-        score += 10 + Math.floor(timeLeft); // Бонус за швидкість
+        score += 10 + Math.floor(timeLeft);
         setTimeout(() => {
             currentQIndex++;
             gameActive = true;
@@ -229,7 +219,6 @@ function handleWrong() {
     }
 }
 
-// --- END GAME & LEADERBOARD ---
 function endGame(win) {
     screens.game.classList.remove('active');
     screens.end.classList.add('active');
@@ -250,38 +239,30 @@ function updateLeaderboard(newScore) {
     // 1. Отримуємо збережені рекорди
     let highScores = JSON.parse(localStorage.getItem('seismic_leaderboard')) || [];
     
-    // 2. Додаємо фейкових ботів, якщо список порожній (для краси)
-    if(highScores.length === 0) {
-        highScores = [
-            { name: "SATOSHI", score: 150 },
-            { name: "NEO", score: 120 },
-            { name: "ROCKY", score: 90 }
-        ];
-    }
+    // БЛОК З БОТАМИ ВИДАЛЕНО
 
-    // 3. Додаємо поточний результат
-    // Перевіряємо, чи цей юзер вже грав, і чи побив він свій рекорд
+    // 2. Додаємо поточний результат
     const existingUserIndex = highScores.findIndex(u => u.name === currentUser);
     
     if (existingUserIndex !== -1) {
         if (newScore > highScores[existingUserIndex].score) {
-            highScores[existingUserIndex].score = newScore; // Оновлюємо рекорд
+            highScores[existingUserIndex].score = newScore;
         }
     } else {
-        highScores.push({ name: currentUser, score: newScore }); // Додаємо нового
+        highScores.push({ name: currentUser, score: newScore });
     }
 
-    // 4. Сортуємо (від найбільшого до найменшого)
+    // 3. Сортуємо
     highScores.sort((a, b) => b.score - a.score);
-
-    // 5. Обрізаємо топ-5
     highScores = highScores.slice(0, 5);
 
-    // 6. Зберігаємо назад
+    // 4. Зберігаємо
     localStorage.setItem('seismic_leaderboard', JSON.stringify(highScores));
 
-    // 7. Відображаємо
+    // 5. Відображаємо
     ui.leaderboardList.innerHTML = "";
+    
+    // Якщо список порожній (нова гра), нічого не показуємо, або показуємо тільки поточного юзера
     highScores.forEach(entry => {
         const li = document.createElement('li');
         li.innerHTML = `<span>${entry.name}</span> <span>${entry.score} pts</span>`;
