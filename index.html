@@ -3,55 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seismic Decoder System</title>
+    <title>Seismic Decoder: System Breach</title>
     <link rel="icon" type="image/png" href="images/stone.png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <canvas id="matrixCanvas"></canvas>
     <div class="scanline"></div>
-    <div class="noise"></div>
+    <div class="vignette"></div>
 
     <div class="game-wrapper">
         
-        <div id="startScreen" class="screen active">
+        <div id="loginScreen" class="screen active">
             <img src="images/stone.png" class="logo-pulse">
-            <h1 class="glitch" data-text="SEISMIC DECODER">SEISMIC DECODER</h1>
-            <p class="status">SYSTEM LOCKED. AUTHORIZATION REQUIRED.</p>
-            <button class="btn-hack" onclick="startGame()">INITIALIZE HACK_</button>
+            <h1 class="glitch" data-text="SEISMIC_NET">SEISMIC_NET</h1>
+            <div class="login-box">
+                <p>IDENTIFY YOURSELF:</p>
+                <input type="text" id="usernameInput" placeholder="ENTER_CODENAME" maxlength="12" autocomplete="off">
+                <button class="btn-hack" onclick="submitLogin()">CONNECT_</button>
+            </div>
         </div>
 
         <div id="gameScreen" class="screen">
             <div class="hud">
-                <div class="lives" id="livesDisplay">
-                    🛡️ 🛡️ 🛡️
-                </div>
+                <div class="user-info">USER: <span id="displayUser">GUEST</span></div>
                 <div class="score">DATA: <span id="scoreVal">0</span>%</div>
             </div>
+            
+            <div class="lives-bar" id="livesDisplay">🛡️ 🛡️ 🛡️</div>
 
             <div class="timer-container">
                 <div class="timer-bar" id="timerBar"></div>
             </div>
 
             <div class="question-box">
-                <div class="question-label">DECRYPTING BLOCK #<span id="qNum">1</span>...</div>
+                <div class="question-label">DECRYPTING SECTOR #<span id="qNum">1</span>...</div>
                 <h2 id="questionText">loading_data...</h2>
             </div>
 
-            <div class="answers-grid" id="answersGrid">
-                </div>
+            <div class="answers-grid" id="answersGrid"></div>
         </div>
 
         <div id="endScreen" class="screen">
-            <h1 id="endTitle">ACCESS DENIED</h1>
-            <div class="final-stats">
-                <p>DECRYPTION LEVEL: <span id="finalScore">0</span>%</p>
-                <p class="rank" id="finalRank">SCRIPT KIDDIE</p>
+            <h1 id="endTitle">CONNECTION LOST</h1>
+            
+            <div class="result-box">
+                <p>FINAL SCORE: <span id="finalScore" class="highlight">0</span></p>
+                <p>RANK: <span id="finalRank">NOOB</span></p>
             </div>
-            <img src="images/rocky.png" id="endImage" class="mascot-hidden">
-            <button class="btn-hack" onclick="location.reload()">RETRY CONNECTION_</button>
-            <button class="btn-share" onclick="shareResult()">BROADCAST RESULT_</button>
+
+            <div class="leaderboard">
+                <h3>TOP HACKERS</h3>
+                <ul id="leaderboardList">
+                    </ul>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-hack" onclick="restartGame()">RETRY_</button>
+                <button class="btn-share" onclick="shareResult()">BROADCAST_</button>
+            </div>
         </div>
 
     </div>
