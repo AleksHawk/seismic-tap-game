@@ -1,131 +1,92 @@
-let score = 0;
-let timeLeft = 10.00;
-let isPlaying = false;
-let gameInterval;
-let timerInterval;
-
-const clickArea = document.getElementById('clickArea');
-const scoreDisplay = document.getElementById('score');
-const timerDisplay = document.getElementById('timer');
-const mascot = document.getElementById('mascot');
-const startHint = document.getElementById('startHint');
+let count = 0;
+const breakBtn = document.getElementById('breakBtn');
+const mainImage = document.getElementById('mainImage');
+const flash = document.getElementById('flash');
 const modal = document.getElementById('modal');
-const finalScoreDisplay = document.getElementById('finalScore');
-const rankTextDisplay = document.getElementById('rankText');
+const modalBox = document.getElementById('modalBox');
 
-// --- ОСНОВНИЙ КЛІК ---
-clickArea.addEventListener('mousedown', handleClick);
-clickArea.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    handleClick(e.touches[0]);
-}, {passive: false});
+// Елементи результату
+const prizeImage = document.getElementById('prizeImage');
+const prizeName = document.getElementById('prizeName');
+const rarityBadge = document.getElementById('rarityBadge');
+const countDisplay = document.getElementById('count');
 
-function handleClick(e) {
-    if (timeLeft <= 0) return;
-    if (!isPlaying) startGame();
+// Список можливого луту
+// rarity: common, uncommon, rare, epic, legendary
+const lootTable = [
+    { name: "Dust Fragment", type: "common", img: "images/stone.png", chance: 50 },
+    { name: "Raw Quartz", type: "uncommon", img: "images/stone.png", chance: 80 },
+    { name: "Seismic Shard", type: "rare", img: "images/stone.png", chance: 94 },
+    { name: "Void Crystal", type: "epic", img: "images/stone.png", chance: 99 },
+    { name: "ROCKY THE GOLEM", type: "legendary", img: "images/rocky.png", chance: 100 }
+];
 
-    score++;
-    scoreDisplay.innerText = score;
+let currentPrize = null;
 
-    mascot.classList.remove('active');
-    void mascot.offsetWidth;
-    mascot.classList.add('active');
-
-    document.body.classList.remove('shake');
-    void document.body.offsetWidth;
-    document.body.classList.add('shake');
-
-    createParticles(e.clientX || e.pageX, e.clientY || e.pageY);
-}
-
-function startGame() {
-    isPlaying = true;
-    startHint.style.opacity = '0';
-    score = 0;
-    timeLeft = 10.00;
+function breakGeode() {
+    // 1. Блокуємо кнопку
+    breakBtn.disabled = true;
+    breakBtn.innerText = "BREAKING...";
     
-    timerInterval = setInterval(() => {
-        timeLeft -= 0.01;
-        timerDisplay.innerText = timeLeft.toFixed(2);
-        if (timeLeft <= 0) endGame();
-    }, 10);
+    // 2. Анімація тряски
+    mainImage.classList.remove('floating');
+    mainImage.classList.add('shaking');
+
+    // 3. Звук (можна додати new Audio().play())
+
+    // 4. Через 1 секунду — результат
+    setTimeout(() => {
+        revealPrize();
+    }, 1000);
 }
 
-function endGame() {
-    isPlaying = false;
-    clearInterval(timerInterval);
-    timerDisplay.innerText = "0.00";
-    finalScoreDisplay.innerText = score;
-    rankTextDisplay.innerText = getRank(score);
-    setTimeout(() => { modal.style.display = 'flex'; }, 500);
+function revealPrize() {
+    // Зупиняємо анімацію
+    mainImage.classList.remove('shaking');
+    
+    // Ефект спалаху
+    flash.classList.add('flash-active');
+    setTimeout(() => flash.classList.remove('flash-active'), 500);
+
+    // Визначаємо виграш (Random 0-100)
+    const roll = Math.random() * 100;
+    currentPrize = lootTable.find(item => roll < item.chance);
+
+    // Оновлюємо лічильник
+    count++;
+    countDisplay.innerText = count;
+
+    // Налаштовуємо модалку
+    prizeImage.src = currentPrize.img;
+    prizeName.innerText = currentPrize.name;
+    rarityBadge.innerText = currentPrize.type;
+
+    // Скидаємо старі класи кольорів
+    modalBox.className = 'modal-box'; 
+    // Додаємо новий клас кольору (напр. tier-rare)
+    modalBox.classList.add(`tier-${currentPrize.type}`);
+
+    // Показуємо вікно
+    modal.style.display = 'flex';
 }
 
-function restartGame() {
+function resetGame() {
     modal.style.display = 'none';
-    score = 0;
-    scoreDisplay.innerText = '0';
-    timerDisplay.innerText = '10.00';
-    startHint.style.opacity = '1';
-    startHint.innerText = 'TAP TO START!';
-    isPlaying = false;
-}
-
-function getRank(score) {
-    if (score < 30) return "Pebble Breaker 🪨";
-    if (score < 50) return "Rock Crusher 🔨";
-    if (score < 70) return "Seismic Agent 🕵️";
-    if (score < 90) return "Tectonic Shifter 🌋";
-    return "SEISMIC GOD ⚡";
-}
-
-function createParticles(x, y) {
-    if (!x || !y) {
-        const rect = mascot.getBoundingClientRect();
-        x = rect.left + rect.width / 2;
-        y = rect.top + rect.height / 2;
-    }
-    for (let i = 0; i < 5; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        document.body.appendChild(particle);
-        const destinationX = (Math.random() - 0.5) * 200;
-        const destinationY = (Math.random() - 0.5) * 200;
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
-        const animation = particle.animate([
-            { transform: `translate(0, 0) scale(1)`, opacity: 1 },
-            { transform: `translate(${destinationX}px, ${destinationY}px) scale(0)`, opacity: 0 }
-        ], { duration: 500, easing: 'cubic-bezier(0, .9, .57, 1)' });
-        animation.onfinish = () => particle.remove();
-    }
+    breakBtn.disabled = false;
+    breakBtn.innerText = "BREAK GEODE 🔨";
+    mainImage.classList.add('floating');
 }
 
 function shareResult() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1200; canvas.height = 675;
-    const ctx = canvas.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 1200, 675);
-    gradient.addColorStop(0, "#1a0b2e");
-    gradient.addColorStop(1, "#000000");
-    ctx.fillStyle = gradient; ctx.fillRect(0, 0, 1200, 675);
-    ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 10;
-    ctx.strokeRect(20, 20, 1160, 635);
-    ctx.fillStyle = "#ffffff"; ctx.font = "bold 80px Arial";
-    ctx.textAlign = "center"; ctx.fillText("SEISMIC POWER TEST", 600, 150);
-    ctx.font = "bold 180px Arial"; ctx.fillStyle = "#a855f7";
-    ctx.shadowColor = "#a855f7"; ctx.shadowBlur = 30;
-    ctx.fillText(score, 600, 350); ctx.shadowBlur = 0;
-    ctx.fillStyle = "#ffffff"; ctx.font = "bold 50px Arial";
-    ctx.fillText(`RANK: ${getRank(score).toUpperCase()}`, 600, 450);
-    ctx.font = "30px Arial"; ctx.fillStyle = "#888";
-    ctx.fillText("Can you beat my score? @SeismicSys", 600, 600);
-    const link = document.createElement('a');
-    link.download = `seismic-score-${score}.png`;
-    link.href = canvas.toDataURL(); link.click();
-    const tweetText = `I just hit ${score} Seismic Power! ⚡
-Rank: ${getRank(score)}
-Try here: https://alekshawk.github.io/seismic-game/`;
-    setTimeout(() => {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
-    }, 1000);
+    // Різний текст залежно від рідкісності
+    let tweetText = "";
+    
+    if (currentPrize.type === 'legendary') {
+        tweetText = `🚨 I JUST PULLED A LEGENDARY ROCKY! 🚨\n\nIt took me ${count} tries on the Seismic Geode.\nCan you beat my luck? 💎🔨\n\n@SeismicSys @AleksYastreb`;
+    } else {
+        tweetText = `I cracked a Seismic Geode and found: ${currentPrize.name} (${currentPrize.type.toUpperCase()}) ✨\n\nTotal opened: ${count}\nTry your luck: https://alekshawk.github.io/seismic-tap-game/\n\n@SeismicSys`;
+    }
+
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    window.open(twitterUrl, '_blank');
 }
