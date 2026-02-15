@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seismic Power Tap Challenge</title>
+    <title>Seismic Geode Breaker</title>
     <link rel="icon" type="image/png" href="images/stone.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
+
+    <div class="game-wrapper">
         <header>
-            <div class="stats-box">
-                <span class="label">POWER</span>
-                <span class="value" id="score">0</span>
-            </div>
-            <div class="logo-title">SEISMIC TAP</div>
-            <div class="stats-box">
-                <span class="label">TIME</span>
-                <span class="value" id="timer">10.00</span>
-            </div>
+            <div class="logo-text">SEISMIC GEODE</div>
+            <div class="counter">OPENED: <span id="count">0</span></div>
         </header>
-        <div class="click-area" id="clickArea">
-            <div class="character-wrapper">
-                <img src="images/rocky.png" alt="Rocky" class="mascot" id="mascot">
-            </div>
-            <p class="start-hint" id="startHint">TAP TO START!</p>
+
+        <div class="geode-container">
+            <div class="glow-bg"></div>
+            <img src="images/stone.png" id="mainImage" class="floating">
+            <div class="flash-overlay" id="flash"></div>
         </div>
+
+        <div class="controls">
+            <button id="breakBtn" onclick="breakGeode()">BREAK GEODE 🔨</button>
+            <p id="hint">Click to reveal your prize</p>
+        </div>
+
         <footer>
-            Created by <a href="https://x.com/AleksYastreb" target="_blank">@Hawk</a> for Seismic
+            Created by <a href="https://x.com/AleksYastreb" target="_blank">@Hawk</a>
         </footer>
     </div>
+
     <div class="modal-overlay" id="modal">
-        <div class="modal-box">
-            <h2>TIME'S UP!</h2>
-            <div class="final-score">
-                <span id="finalScore">0</span>
-                <small>SEISMIC POWER</small>
-            </div>
-            <p class="rank-text" id="rankText">EARTHQUAKE MAKER</p>
-            <div class="action-buttons">
-                <button onclick="restartGame()" class="btn-retry">TRY AGAIN ↻</button>
+        <div class="modal-box" id="modalBox">
+            <div class="rarity-badge" id="rarityBadge">LEGENDARY</div>
+            <img src="" id="prizeImage" class="prize-img">
+            <h2 id="prizeName">Seismic Core</h2>
+            
+            <div class="modal-buttons">
+                <button onclick="resetGame()" class="btn-retry">OPEN ANOTHER</button>
                 <button onclick="shareResult()" class="btn-share">SHARE ON X 🚀</button>
             </div>
         </div>
     </div>
+
     <script src="game.js"></script>
 </body>
 </html>
