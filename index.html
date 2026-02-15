@@ -18,7 +18,17 @@
         
         <div id="loginScreen" class="screen active">
             <img src="images/stone.png" class="logo-pulse">
-            <h1 class="glitch" data-text="SEISMIC_NET">SEISMIC_NET</h1>
+            <h1 class="glitch" data-text="SEISMIC">SEISMIC</h1>
+            
+            <div class="mission-box">
+                <p class="mission-title">>> MISSION PROTOCOL <<</p>
+                <ul class="mission-list">
+                    <li>[1] DECRYPT DATA by answering questions.</li>
+                    <li>[2] SPEED MATTERS: Faster = More Points.</li>
+                    <li>[3] SYSTEM FAILURES: You have 3 Lives.</li>
+                </ul>
+            </div>
+
             <div class="login-box">
                 <p>IDENTIFY YOURSELF:</p>
                 <input type="text" id="usernameInput" placeholder="ENTER_CODENAME" maxlength="12" autocomplete="off">
@@ -55,9 +65,8 @@
             </div>
 
             <div class="leaderboard">
-                <h3>TOP HACKERS</h3>
-                <ul id="leaderboardList">
-                    </ul>
+                <h3>LOCAL DATABASE</h3>
+                <ul id="leaderboardList"></ul>
             </div>
 
             <div class="btn-group">
