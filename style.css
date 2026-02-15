@@ -1,99 +1,178 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&display=swap');
-
 body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background-color: #050505;
+    color: #a855f7; /* Neon Purple */
+    font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
-    font-family: 'Chakra Petch', sans-serif;
-    touch-action: none; /* Забороняємо зум і скрол */
-}
-
-.game-container {
-    position: relative;
-    width: 100vw;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at bottom, #1e0b2e 0%, #000000 70%);
+    user-select: none;
 }
 
-canvas {
-    display: block;
-    max-width: 100%;
-    max-height: 100%;
-    border-bottom: 4px solid #a855f7; /* Лінія землі */
-}
-
-.ui-layer {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    display: flex;
-    justify-content: space-between;
+/* --- ЕФЕКТИ ЕКРАНУ (CRT) --- */
+.scanline {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+    background-size: 100% 4px;
     pointer-events: none;
     z-index: 10;
 }
 
-.score-board, .high-score {
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 0 0 10px #a855f7;
+.noise {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.3.0/paper.css') repeat; 
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 9;
 }
 
-.overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
+.game-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 20;
+    z-index: 5;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.screen.active { display: flex; }
+
+/* --- СТАРТ --- */
+.logo-pulse {
+    width: 100px;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 10px #a855f7);
+    margin-bottom: 20px;
+}
+@keyframes pulse { 0%{opacity:0.7} 50%{opacity:1; transform:scale(1.05)} 100%{opacity:0.7} }
+
+.glitch {
+    font-size: 40px;
+    position: relative;
+    color: white;
+    text-shadow: 2px 2px #a855f7;
+}
+
+.status { color: #666; margin-bottom: 40px; font-size: 14px; letter-spacing: 2px; }
+
+.btn-hack {
+    background: transparent;
+    border: 2px solid #a855f7;
+    color: #a855f7;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    transition: 0.2s;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.btn-hack:hover {
+    background: #a855f7;
+    color: black;
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+}
+
+/* --- ГРА UI --- */
+.hud {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px #a855f7;
+}
+
+.timer-container {
+    width: 100%;
+    height: 10px;
+    background: #222;
+    margin-bottom: 30px;
+    border: 1px solid #444;
+}
+
+.timer-bar {
+    width: 100%;
+    height: 100%;
+    background: #22c55e; /* Green start */
+    transition: width 0.1s linear, background 0.3s;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+.timer-low { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+
+.question-box {
+    margin-bottom: 30px;
+    border: 1px solid #a855f7;
+    padding: 20px;
+    background: rgba(168, 85, 247, 0.1);
+    width: 100%;
+    box-sizing: border-box;
     backdrop-filter: blur(5px);
 }
 
-.title {
-    color: #a855f7;
-    font-size: 48px;
-    margin: 0;
-    text-shadow: 0 0 20px #a855f7;
-    letter-spacing: 2px;
+.question-label { color: #666; font-size: 12px; margin-bottom: 10px; }
+#questionText { margin: 0; color: white; font-size: 22px; line-height: 1.4; }
+
+.answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
 }
 
-.subtitle {
+.ans-btn {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #555;
     color: #ccc;
-    font-size: 18px;
-    margin-bottom: 30px;
-    animation: pulse 1s infinite;
-}
-
-.final-score {
-    color: white;
-    font-size: 36px;
-    margin: 10px 0 30px 0;
-    font-weight: bold;
-}
-
-.btn {
-    background: #a855f7;
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 8px;
+    padding: 15px;
     cursor: pointer;
-    font-family: 'Chakra Petch', sans-serif;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
     transition: 0.2s;
-    margin-bottom: 10px;
 }
 
-.btn:hover { background: #9333ea; transform: scale(1.05); }
-.share-btn { background: white; color: black; }
+.ans-btn:hover { border-color: #a855f7; color: white; }
+.ans-btn:active { transform: scale(0.98); }
 
-@keyframes pulse { 0%{opacity:0.5} 50%{opacity:1} 100%{opacity:0.5} }
+.ans-correct { background: #064e3b !important; border-color: #22c55e !important; color: white !important; }
+.ans-wrong { background: #450a0a !important; border-color: #ef4444 !important; color: white !important; }
+
+/* --- ANIMATIONS --- */
+.shake-screen { animation: shake 0.5s; }
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* --- END SCREEN --- */
+.final-stats { font-size: 24px; margin: 20px 0; color: white; }
+.rank { color: #a855f7; font-weight: bold; font-size: 32px; margin-top: 10px; }
+.mascot-hidden { width: 150px; margin-bottom: 20px; display: none; }
+.btn-share {
+    background: white; color: black; border: none; padding: 15px 30px;
+    font-family: 'Share Tech Mono', monospace; cursor: pointer; margin-top: 10px;
+    font-weight: bold;
+}
