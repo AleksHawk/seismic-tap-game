@@ -70,9 +70,9 @@ function playSound(type) {
 }
 
 
-// --- 3. QUESTION BANK (UPDATED) ---
+// --- 3. QUESTION BANK ---
 const questionBank = [
-    // Updated Mission Question
+    // Corrected Mission Question
     { q: "What is Seismic's main mission?", a: ["Enable encrypted execution for fintech apps", "1GB Block Size", "Zero Gas Fees", "New Social Network"], correct: 0 },
     
     // Corrected Sequencers Question
@@ -81,7 +81,7 @@ const questionBank = [
     // Corrected Encrypted Memory Question
     { q: "Encrypted Memory Access?", a: ["Perform operations on encrypted data without decryption", "PC Password", "USB Encrypt", "Screen Encrypt"], correct: 0 },
     
-    // Other Standard Questions
+    // Standard Questions
     { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
     { q: "Which tech provides hardware protection?", a: ["Intel TDX (Secure Enclaves)", "Raspberry Pi", "Google TPU", "NVIDIA RTX"], correct: 0 },
     { q: "Is Seismic EVM compatible?", a: ["No, new language", "Yes, modified EVM + stype", "Read-only", "Only via bridges"], correct: 1 },
@@ -97,7 +97,8 @@ const questionBank = [
     { q: "Can a contract have hybrid state?", a: ["No", "Yes, Public & Private", "Double Fee Only", "Testnet Only"], correct: 1 },
     { q: "Testing framework?", a: ["Hardhat", "Foundry fork + encryption", "Truffle", "Remix"], correct: 1 },
     { q: "Protection against MEV?", a: ["Encrypted Mempool", "Ban Bots", "Higher Fees", "Central Server"], correct: 0 },
-    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 }
+    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 },
+    { q: "App for restaurant revenue share?", a: ["Nibble", "Bite", "Chef", "Menu"], correct: 0 }
 ];
 
 
@@ -111,6 +112,7 @@ let timeLeft;
 let startMaxTime = 15;
 let gameActive = false;
 let shuffledQuestions = [];
+let typewriterTimeout; // For canceling type effect
 
 const ui = {
     login: document.getElementById('loginScreen'),
@@ -163,6 +165,24 @@ function updateLives() {
     ui.lives.innerText = hearts;
 }
 
+// --- TYPEWRITER EFFECT FUNCTION ---
+function typeWriter(text, element, speed = 25) {
+    // Clear previous timeout if user clicks fast
+    if (typewriterTimeout) clearTimeout(typewriterTimeout);
+    
+    element.innerHTML = "";
+    let i = 0;
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            typewriterTimeout = setTimeout(type, speed);
+        }
+    }
+    type();
+}
+
 function loadQuestion() {
     if(currentQIndex >= shuffledQuestions.length) {
         endGame();
@@ -171,7 +191,10 @@ function loadQuestion() {
 
     const qData = shuffledQuestions[currentQIndex];
     ui.qNum.innerText = currentQIndex + 1;
-    ui.questionText.innerText = qData.q;
+    
+    // NEW: Use Typewriter effect
+    typeWriter(qData.q, ui.questionText);
+    
     ui.answersGrid.innerHTML = '';
 
     qData.a.forEach((ans, index) => {
