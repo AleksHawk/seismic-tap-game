@@ -14,10 +14,10 @@ body {
     position: fixed;
     top: 0; left: 0;
     z-index: 0;
-    opacity: 0.15;
+    opacity: 0.1;
 }
 
-/* --- ЕФЕКТИ ЕКРАНУ --- */
+/* --- ЕФЕКТИ --- */
 .scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -30,7 +30,7 @@ body {
 .vignette {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle, transparent 60%, black 100%);
+    background: radial-gradient(circle, transparent 50%, black 100%);
     z-index: 9;
     pointer-events: none;
 }
@@ -50,7 +50,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     text-align: center;
 }
 
@@ -58,14 +58,21 @@ body {
 
 @keyframes fadeIn { from{opacity:0; transform: scale(0.95);} to{opacity:1; transform: scale(1);} }
 
-/* --- ЛОГІН --- */
+/* --- LOGIN --- */
 .logo-pulse {
-    width: 100px;
+    width: 80px;
     filter: drop-shadow(0 0 15px #a855f7);
     animation: pulse 2s infinite;
+    margin-bottom: 10px;
 }
 
-/* --- ПРАВИЛА ГРИ (НОВЕ) --- */
+.glitch {
+    font-size: 40px;
+    color: white;
+    text-shadow: 2px 2px #a855f7;
+    margin: 0;
+}
+
 .mission-box {
     border: 1px dashed #444;
     background: rgba(0, 0, 0, 0.6);
@@ -76,30 +83,9 @@ body {
     box-sizing: border-box;
 }
 
-.mission-title {
-    color: #22c55e; /* Green title */
-    font-weight: bold;
-    margin: 0 0 10px 0;
-    font-size: 16px;
-    letter-spacing: 1px;
-}
-
-.mission-list {
-    margin: 0;
-    padding-left: 0;
-    list-style: none;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.mission-list li {
-    margin-bottom: 5px;
-}
-
-.login-box {
-    margin-top: 10px;
-    width: 100%;
-}
+.mission-title { color: #22c55e; font-weight: bold; margin: 0 0 5px 0; }
+.mission-list { margin: 0; padding-left: 0; list-style: none; font-size: 14px; color: #ccc; }
+.mission-list li { margin-bottom: 3px; }
 
 input[type="text"] {
     background: rgba(0,0,0,0.7);
@@ -113,39 +99,40 @@ input[type="text"] {
     margin-bottom: 20px;
     outline: none;
     text-transform: uppercase;
-    transition: 0.3s;
 }
 
-input[type="text"]:focus {
-    border-color: #a855f7;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
-}
+input[type="text"]:focus { border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
 
-/* --- КНОПКИ --- */
+/* --- BUTTONS --- */
 .btn-hack {
-    background: transparent;
-    border: 2px solid #a855f7;
-    color: #a855f7;
+    background: #a855f7;
+    color: black;
+    border: none;
     padding: 12px 30px;
     font-size: 18px;
     font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
-    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
     transition: 0.2s;
-    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-.btn-hack:hover {
-    background: #a855f7;
-    color: black;
-    box-shadow: 0 0 20px #a855f7;
-}
+.btn-hack:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(168, 85, 247, 0.8); }
 
 .btn-share {
     background: white; color: black; border: none;
     padding: 12px 30px; font-size: 18px; font-weight: bold;
     cursor: pointer; font-family: 'Share Tech Mono', monospace;
+    margin-left: 10px;
 }
+
+.btn-retry {
+    background: transparent; color: #666; border: 1px solid #444;
+    padding: 12px; margin-left: 10px; cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+}
+.btn-retry:hover { color: white; border-color: white; }
 
 /* --- GAME UI --- */
 .hud {
@@ -172,7 +159,6 @@ input[type="text"]:focus {
     width: 100%;
     height: 100%;
     background: #a855f7;
-    box-shadow: 0 0 10px #a855f7;
     transition: width 0.1s linear;
 }
 
@@ -184,22 +170,17 @@ input[type="text"]:focus {
     margin-bottom: 20px;
     backdrop-filter: blur(5px);
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.question-label {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-}
+.question-label { font-size: 12px; color: #888; margin-bottom: 10px; }
 
 #questionText { 
-    margin: 0; 
-    color: #fff; 
-    font-size: 20px; 
-    line-height: 1.4;
+    margin: 0; color: #fff; font-size: 18px; line-height: 1.4;
     white-space: pre-wrap; 
-    letter-spacing: 1px;
 }
 
 .answers-grid {
@@ -216,7 +197,7 @@ input[type="text"]:focus {
     padding: 15px;
     cursor: pointer;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
+    font-size: 15px;
     transition: 0.2s;
     text-align: left;
 }
@@ -225,28 +206,20 @@ input[type="text"]:focus {
 .ans-correct { background: #064e3b !important; border-color: #22c55e !important; color: white !important; }
 .ans-wrong { background: #450a0a !important; border-color: #ef4444 !important; color: white !important; }
 
-/* --- ЛІДЕРБОРД --- */
-.leaderboard {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #444;
-    padding: 10px;
+/* --- CERTIFICATE --- */
+#certificatePreview {
     margin: 20px 0;
-    text-align: left;
 }
-
-.leaderboard h3 { margin: 0 0 10px 0; color: #a855f7; border-bottom: 1px solid #444; padding-bottom: 5px; }
-
-#leaderboardList { list-style: none; padding: 0; margin: 0; font-size: 14px; }
-#leaderboardList li {
-    display: flex; justify-content: space-between;
-    padding: 5px 0; border-bottom: 1px dashed #333;
+#certificatePreview canvas, #certificatePreview img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #a855f7;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
 }
-#leaderboardList li.user-score { color: #22c55e; font-weight: bold; }
 
 .highlight { font-size: 32px; color: #fff; text-shadow: 0 0 10px #a855f7; }
 
 .shake { animation: shakeAnim 0.4s; }
 @keyframes shakeAnim { 0%{transform:translate(0,0)} 25%{transform:translate(-5px,0)} 50%{transform:translate(5px,0)} 75%{transform:translate(-5px,0)} 100%{transform:translate(0,0)} }
-
 @keyframes pulse { 0%{opacity:0.8} 50%{opacity:1} 100%{opacity:0.8} }
