@@ -30,19 +30,11 @@ function drawMatrix() {
 }
 setInterval(drawMatrix, 40);
 
-// --- 2. AUDIO SYSTEM (ONLY SFX) ---
+// --- 2. AUDIO SYSTEM (SFX ONLY) ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let isMuted = true;
-
-function toggleAudio() {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const btn = document.getElementById('audioBtn');
-    isMuted = !isMuted;
-    btn.innerText = isMuted ? "🔇" : "🔊";
-}
 
 function playSound(type) {
-    if(isMuted) return;
+    // Resume context if suspended (browser policy)
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
     const osc = audioCtx.createOscillator();
@@ -138,11 +130,6 @@ function submitLogin() {
     const name = input.value.trim().toUpperCase();
     if(name.length > 0) {
         currentUser = name;
-        toggleAudio(); // Start allowing audio (but muted by default until user toggles if they want)
-        // Note: isMuted is TRUE by default. 
-        // If you want sound ON by default, change `let isMuted = true` to `false` above,
-        // and in toggleAudio check logic. But removing drone means we just rely on SFX.
-        
         ui.login.classList.remove('active');
         ui.game.classList.add('active');
         startGame();
@@ -155,6 +142,7 @@ function startGame() {
     score = 0;
     lives = 3;
     currentQIndex = 0;
+    // Pick 15 random
     shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 15);
     
     ui.userDisplay.innerText = currentUser;
@@ -241,7 +229,6 @@ function handleWrong() {
     lives--;
     updateLives();
     
-    // Shake effect
     document.body.classList.add('shake');
     setTimeout(() => document.body.classList.remove('shake'), 400);
 
@@ -258,7 +245,7 @@ function nextQuestion() {
 }
 
 function endGame() {
-    triggerConfetti(); // Celebrate
+    triggerConfetti();
     ui.game.classList.remove('active');
     ui.end.classList.add('active');
     ui.finalScore.innerText = score + "/15";
@@ -324,7 +311,6 @@ function drawCertificate(rank) {
     logo.src = 'images/stone.png'; 
 
     logo.onload = () => {
-        // Background & Grid
         const gradient = ctx.createLinearGradient(0, 0, 1200, 675);
         gradient.addColorStop(0, '#0a0010'); 
         gradient.addColorStop(1, '#000000');
@@ -336,14 +322,12 @@ function drawCertificate(rank) {
         for(let i=0; i<1200; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,675); ctx.stroke(); }
         for(let j=0; j<675; j+=50) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(1200,j); ctx.stroke(); }
 
-        // Watermark
         ctx.save();
         ctx.globalAlpha = 0.15;
         const watermarkSize = 400;
         ctx.drawImage(logo, (1200-watermarkSize)/2, (675-watermarkSize)/2, watermarkSize, watermarkSize);
         ctx.restore();
 
-        // Border & Text
         ctx.strokeStyle = '#a855f7';
         ctx.lineWidth = 15;
         ctx.strokeRect(30, 30, 1140, 615);
