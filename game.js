@@ -34,7 +34,6 @@ setInterval(drawMatrix, 40);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
-    // Resume context if suspended (browser policy)
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
     const osc = audioCtx.createOscillator();
@@ -71,10 +70,19 @@ function playSound(type) {
 }
 
 
-// --- 3. QUESTION BANK ---
+// --- 3. QUESTION BANK (UPDATED) ---
 const questionBank = [
+    // Updated Mission Question
+    { q: "What is Seismic's main mission?", a: ["Enable encrypted execution for fintech apps", "1GB Block Size", "Zero Gas Fees", "New Social Network"], correct: 0 },
+    
+    // Corrected Sequencers Question
+    { q: "Role of Sequencers?", a: ["Order and encrypt transactions in batches", "Music", "Visualization", "Token Name"], correct: 0 },
+    
+    // Corrected Encrypted Memory Question
+    { q: "Encrypted Memory Access?", a: ["Perform operations on encrypted data without decryption", "PC Password", "USB Encrypt", "Screen Encrypt"], correct: 0 },
+    
+    // Other Standard Questions
     { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
-    { q: "What is Seismic's main mission?", a: ["1GB Block Size", "Encrypt All Chains", "Zero Gas Fees", "New Social Network"], correct: 1 },
     { q: "Which tech provides hardware protection?", a: ["Intel TDX (Secure Enclaves)", "Raspberry Pi", "Google TPU", "NVIDIA RTX"], correct: 0 },
     { q: "Is Seismic EVM compatible?", a: ["No, new language", "Yes, modified EVM + stype", "Read-only", "Only via bridges"], correct: 1 },
     { q: "Who is the lead investor?", a: ["MicroStrategy", "a16z crypto", "Tesla", "Binance Labs"], correct: 1 },
@@ -87,12 +95,9 @@ const questionBank = [
     { q: "How is Solidity modified?", a: ["Zinc", "SeisSol", "Adds 'stype' (secure type)", "Vyper++"], correct: 2 },
     { q: "Data inside Secure Enclave during execution?", a: ["Becomes public", "Decrypt -> Process -> Encrypt", "Sent to validators", "Deleted"], correct: 1 },
     { q: "Can a contract have hybrid state?", a: ["No", "Yes, Public & Private", "Double Fee Only", "Testnet Only"], correct: 1 },
-    { q: "Role of Sequencers?", a: ["Music", "Encrypt txs & connect chains", "Visualization", "Token Name"], correct: 1 },
     { q: "Testing framework?", a: ["Hardhat", "Foundry fork + encryption", "Truffle", "Remix"], correct: 1 },
     { q: "Protection against MEV?", a: ["Encrypted Mempool", "Ban Bots", "Higher Fees", "Central Server"], correct: 0 },
-    { q: "Encrypted Memory Access?", a: ["PC Password", "Manipulate arrays securely", "USB Encrypt", "Screen Encrypt"], correct: 1 },
-    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 },
-    { q: "App for restaurant revenue share?", a: ["Nibble", "Bite", "Chef", "Menu"], correct: 0 }
+    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 }
 ];
 
 
@@ -142,7 +147,6 @@ function startGame() {
     score = 0;
     lives = 3;
     currentQIndex = 0;
-    // Pick 15 random
     shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 15);
     
     ui.userDisplay.innerText = currentUser;
