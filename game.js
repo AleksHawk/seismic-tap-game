@@ -1,138 +1,186 @@
 // --- 1. MATRIX RAIN EFFECT ---
 const canvas = document.getElementById('matrixCanvas');
 const ctx = canvas.getContext('2d');
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
-const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
-const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const nums = '0123456789';
-const alphabet = katakana + latin + nums;
-
+const chars = 'SEISMIC01XYZ';
 const fontSize = 16;
 const columns = canvas.width/fontSize;
 const drops = [];
-
 for(let x = 0; x < columns; x++) drops[x] = 1;
 
 function drawMatrix() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     ctx.fillStyle = '#a855f7';
     ctx.font = fontSize + 'px monospace';
-
     for(let i = 0; i < drops.length; i++) {
-        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
         ctx.fillText(text, i*fontSize, drops[i]*fontSize);
         if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
     }
 }
-setInterval(drawMatrix, 30);
+setInterval(drawMatrix, 40);
 window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
 
-// --- 2. GAME LOGIC ---
+// --- 2. AUDIO SYSTEM ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    const now = audioCtx.currentTime;
+    if (type === 'click') {
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+    } else if (type === 'correct') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+        if(navigator.vibrate) navigator.vibrate(300);
+    }
+}
 
-// Питання
+
+// --- 3. QUESTION BANK (FULL 28 QUESTIONS) ---
 const questionBank = [
-    { q: "Seismic provides which key feature?", a: ["Public Transparency", "Shielded Transactions", "Infinite Supply", "Slow Speed"], correct: 1 },
-    { q: "Your Private Key should be shared with...", a: ["Everyone", "Admins", "No One", "Mom"], correct: 2 },
-    { q: "What triggers a Smart Contract?", a: ["Code conditions", "A phone call", "A lawyer", "Luck"], correct: 0 },
-    { q: "Web3 allows users to...", a: ["Read only", "Read & Write", "Own Data", "Delete Internet"], correct: 2 },
-    { q: "If Seismic hides data, it uses...", a: ["Magic", "Zero-Knowledge Proofs", "VPN", "Incognito Mode"], correct: 1 },
-    { q: "A 'Rug Pull' means...", a: ["New carpet", "Project scam/theft", "Market crash", "Bug fix"], correct: 1 },
-    { q: "What is a DAO?", a: ["Decentralized Org", "Digital Art Online", "Data Access Object", "Dog And Owl"], correct: 0 },
-    { q: "Gas fees are paid to...", a: ["The CEO", "Validators/Miners", "Google", "Charity"], correct: 1 },
-    { q: "Cold Storage means...", a: ["Offline Wallet", "Fridge", "Cloud Storage", "Lost Wallet"], correct: 0 },
-    { q: "The Seismic mascot is a...", a: ["Cat", "Golem/Rock", "Robot", "Alien"], correct: 1 }
+    // Level 1: Basics
+    { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
+    { q: "What is Seismic's main mission?", a: ["1GB Block Size", "Encrypt All Chains", "Zero Gas Fees", "New Social Network"], correct: 1 },
+    { q: "Which tech provides hardware protection?", a: ["Intel TDX (Secure Enclaves)", "Raspberry Pi", "Google TPU", "NVIDIA RTX"], correct: 0 },
+    { q: "Is Seismic EVM compatible?", a: ["No, new language", "Yes, modified EVM + stype", "Read-only", "Only via bridges"], correct: 1 },
+    { q: "Who is the lead investor?", a: ["MicroStrategy", "a16z crypto", "Tesla", "Binance Labs"], correct: 1 },
+    { q: "What are the two memory segments?", a: ["Red & Blue", "Transparent & Encrypted", "Public & Private", "Fast & Slow"], correct: 1 },
+    { q: "Best use case for Seismic?", a: ["Meme coins", "Private DeFi / Dark Pools", "Static Sites", "Music Streaming"], correct: 1 },
+    { q: "Encrypted Global State allows...", a: ["Seeing all balances", "Composability without leaks", "Mobile Mining", "Deleting History"], correct: 1 },
+    { q: "Consensus mechanism?", a: ["Proof of Work", "CometBFT (PoS)", "Proof of Space", "Proof of Authority"], correct: 1 },
+    { q: "App for restaurant revenue share?", a: ["Nibble", "Bite", "Chef", "Menu"], correct: 0 },
+
+    // Level 2: Master
+    { q: "Instruction to LOAD encrypted data?", a: ["ELOAD", "CLOAD (Cipher Load)", "SECRET_LOAD", "HIDE_READ"], correct: 1 },
+    { q: "Instruction to STORE encrypted data?", a: ["CSTORE", "ESTORE", "LOCK_DATA", "SAVE_PRIVATE"], correct: 0 },
+    { q: "Execution client based on?", a: ["Geth", "Reth (Rust)", "Besu", "Erigon"], correct: 1 },
+    { q: "How is Solidity modified?", a: ["Zinc", "SeisSol", "Adds 'stype' (secure type)", "Vyper++"], correct: 2 },
+    { q: "Data inside Secure Enclave during execution?", a: ["Becomes public", "Decrypt -> Process -> Encrypt", "Sent to validators", "Deleted"], correct: 1 },
+    { q: "Can a contract have hybrid state?", a: ["No", "Yes, Public & Private", "Double Fee Only", "Testnet Only"], correct: 1 },
+    { q: "What is 'Level' app?", a: ["Platformer", "Belief-based trading", "Audit Tool", "API Access"], correct: 1 },
+    { q: "Role of Sequencers?", a: ["Music", "Encrypt txs & connect chains", "Visualization", "Token Name"], correct: 1 },
+    { q: "Testing framework?", a: ["Hardhat", "Foundry fork + encryption", "Truffle", "Remix"], correct: 1 },
+
+    // Level 3: Guru
+    { q: "Privacy implementation level?", a: ["Wallet", "Protocol (TEE)", "UI", "Browser"], correct: 1 },
+    { q: "Key problem solved?", a: ["Hiding sensitive data (wages/trades)", "Slow speed", "Storage cost", "Mining difficulty"], correct: 0 },
+    { q: "What is 'Folio'?", a: ["Pay-it-forward system", "Portfolio Tracker", "PDF Docs", "Mobile Wallet"], correct: 0 },
+    { q: "VM Library used?", a: ["revm", "evmone", "py-evm", "vm-ware"], correct: 0 },
+    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 },
+    { q: "Does it support Dark Pools?", a: ["No", "Yes, key use case", "NFT Only", "Stablecoins Only"], correct: 1 },
+    { q: "Protection against MEV?", a: ["Encrypted Mempool", "Ban Bots", "Higher Fees", "Central Server"], correct: 0 },
+    { q: "Encrypted Memory Access?", a: ["PC Password", "Manipulate arrays securely", "USB Encrypt", "Screen Encrypt"], correct: 1 },
+    { q: "Final Goal?", a: ["Digital Fortress (Fintech Privacy)", "Public Data", "No Blockchain", "Web2 Return"], correct: 0 }
 ];
 
+
+// --- 4. GAME VARIABLES ---
 let currentUser = "GUEST";
 let score = 0;
 let lives = 3;
 let currentQIndex = 0;
 let timer;
 let timeLeft;
-let maxTime = 15;
+let startMaxTime = 15;
 let gameActive = false;
+let shuffledQuestions = [];
 
-const screens = {
+const ui = {
     login: document.getElementById('loginScreen'),
     game: document.getElementById('gameScreen'),
-    end: document.getElementById('endScreen')
-};
-const ui = {
+    end: document.getElementById('endScreen'),
     userDisplay: document.getElementById('displayUser'),
     scoreVal: document.getElementById('scoreVal'),
     lives: document.getElementById('livesDisplay'),
     timerBar: document.getElementById('timerBar'),
     questionText: document.getElementById('questionText'),
     qNum: document.getElementById('qNum'),
+    totalQ: document.getElementById('totalQ'),
     answersGrid: document.getElementById('answersGrid'),
     finalScore: document.getElementById('finalScore'),
     finalRank: document.getElementById('finalRank'),
-    leaderboardList: document.getElementById('leaderboardList')
+    certPreview: document.getElementById('certificatePreview')
 };
 
-// --- START & LOGIN ---
+
+// --- 5. FUNCTIONS ---
+
 function submitLogin() {
+    playSound('click');
     const input = document.getElementById('usernameInput');
     const name = input.value.trim().toUpperCase();
-    
     if(name.length > 0) {
         currentUser = name;
-        localStorage.setItem('seismic_last_user', currentUser);
-        screens.login.classList.remove('active');
-        screens.game.classList.add('active');
+        ui.login.classList.remove('active');
+        ui.game.classList.add('active');
         startGame();
     } else {
         input.style.borderColor = 'red';
-        setTimeout(() => input.style.borderColor = '#555', 500);
     }
 }
 
-window.onload = () => {
-    const savedUser = localStorage.getItem('seismic_last_user');
-    if(savedUser) document.getElementById('usernameInput').value = savedUser;
-};
-
 function startGame() {
-    ui.userDisplay.innerText = currentUser;
     score = 0;
     lives = 3;
-    maxTime = 15;
     currentQIndex = 0;
     
-    currentQuestions = [...questionBank].sort(() => 0.5 - Math.random());
+    // 1. Беремо всі питання
+    // 2. Перемішуємо
+    // 3. Відрізаємо тільки перші 15
+    shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 15);
     
-    updateHUD();
+    ui.userDisplay.innerText = currentUser;
+    ui.scoreVal.innerText = score;
+    ui.totalQ.innerText = shuffledQuestions.length; // Покаже 15
+    
+    updateLives();
     loadQuestion();
-    gameActive = true;
 }
 
-function updateHUD() {
-    ui.scoreVal.innerText = score;
+function updateLives() {
     let hearts = "";
-    for(let i=0; i<lives; i++) hearts += "🛡️ ";
+    for(let i=0; i<lives; i++) hearts += "❤️ ";
     ui.lives.innerText = hearts;
 }
 
 function loadQuestion() {
-    if(currentQIndex >= currentQuestions.length) {
-        endGame(true);
+    if(currentQIndex >= shuffledQuestions.length) {
+        endGame();
         return;
     }
 
-    const qData = currentQuestions[currentQIndex];
+    const qData = shuffledQuestions[currentQIndex];
     ui.qNum.innerText = currentQIndex + 1;
-    
-    typeWriter(qData.q, ui.questionText);
-    
+    ui.questionText.innerText = qData.q;
     ui.answersGrid.innerHTML = '';
-    
+
     qData.a.forEach((ans, index) => {
         const btn = document.createElement('button');
         btn.innerText = ans;
@@ -141,35 +189,25 @@ function loadQuestion() {
         ui.answersGrid.appendChild(btn);
     });
 
-    resetTimer();
+    gameActive = true;
+    startTimer();
 }
 
-function typeWriter(text, element) {
-    element.textContent = ""; 
-    let i = 0;
-    const speed = 30; 
-    function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
-    }
-    type();
-}
-
-function resetTimer() {
+function startTimer() {
     clearInterval(timer);
-    timeLeft = Math.max(4, maxTime - (currentQIndex * 0.8)); 
+    // Часу стає менше під кінець гри
+    let duration = Math.max(5, startMaxTime - (currentQIndex * 0.5));
+    timeLeft = duration;
+    
     ui.timerBar.style.width = "100%";
     ui.timerBar.style.backgroundColor = "#a855f7";
 
     timer = setInterval(() => {
         timeLeft -= 0.05;
-        let percent = (timeLeft / (Math.max(4, maxTime - (currentQIndex * 0.8)))) * 100;
+        let percent = (timeLeft / duration) * 100;
         ui.timerBar.style.width = percent + "%";
-
-        if(percent < 30) ui.timerBar.style.backgroundColor = "#ef4444";
+        
+        if(percent < 30) ui.timerBar.style.backgroundColor = "red";
 
         if(timeLeft <= 0) {
             clearInterval(timer);
@@ -182,103 +220,134 @@ function checkAnswer(selected, correct) {
     if(!gameActive) return;
     clearInterval(timer);
     gameActive = false;
-
+    
     const btns = ui.answersGrid.children;
-
+    
     if(selected === correct) {
+        playSound('correct');
         btns[selected].classList.add('ans-correct');
-        score += 10 + Math.floor(timeLeft);
-        setTimeout(() => {
-            currentQIndex++;
-            gameActive = true;
-            updateHUD();
-            loadQuestion();
-        }, 800);
+        score++;
+        ui.scoreVal.innerText = score;
+        setTimeout(nextQuestion, 800);
     } else {
+        playSound('wrong');
         btns[selected].classList.add('ans-wrong');
         btns[correct].classList.add('ans-correct');
-        handleWrong();
+        handleWrong(true);
     }
 }
 
-function handleWrong() {
-    document.body.classList.add('shake');
-    setTimeout(() => document.body.classList.remove('shake'), 400);
-    
+function handleWrong(skipDelay) {
     lives--;
-    updateHUD();
-
+    updateLives();
     if(lives <= 0) {
-        setTimeout(() => endGame(false), 1000);
+        setTimeout(endGame, 1000);
     } else {
-        setTimeout(() => {
-            currentQIndex++;
-            gameActive = true;
-            loadQuestion();
-        }, 1500);
+        setTimeout(nextQuestion, skipDelay ? 1500 : 1000);
     }
 }
 
-function endGame(win) {
-    screens.game.classList.remove('active');
-    screens.end.classList.add('active');
-    
-    ui.finalScore.innerText = score;
-    
-    if(score < 50) ui.finalRank.innerText = "SCRIPT KIDDIE";
-    else if(score < 100) ui.finalRank.innerText = "GRAY HAT";
-    else ui.finalRank.innerText = "SEISMIC ARCHITECT 🏆";
-    
-    if(win) document.getElementById('endTitle').innerText = "SYSTEM HACKED";
-    else document.getElementById('endTitle').innerText = "ACCESS DENIED";
-
-    updateLeaderboard(score);
+function nextQuestion() {
+    currentQIndex++;
+    loadQuestion();
 }
 
-function updateLeaderboard(newScore) {
-    // 1. Отримуємо збережені рекорди
-    let highScores = JSON.parse(localStorage.getItem('seismic_leaderboard')) || [];
+function endGame() {
+    ui.game.classList.remove('active');
+    ui.end.classList.add('active');
+    ui.finalScore.innerText = score + "/15";
+
+    // --- НОВА ЛОГІКА РАНГІВ ---
+    let rank = "UNRANKED ❌";
+    if(score >= 5) rank = "SEISMIC NOVICE 👶";
+    if(score >= 10) rank = "SEISMIC MASTER 🧠";
+    if(score === 15) rank = "SEISMIC GURU ⚡";
     
-    // БЛОК З БОТАМИ ВИДАЛЕНО
-
-    // 2. Додаємо поточний результат
-    const existingUserIndex = highScores.findIndex(u => u.name === currentUser);
+    ui.finalRank.innerText = rank;
     
-    if (existingUserIndex !== -1) {
-        if (newScore > highScores[existingUserIndex].score) {
-            highScores[existingUserIndex].score = newScore;
-        }
-    } else {
-        highScores.push({ name: currentUser, score: newScore });
-    }
-
-    // 3. Сортуємо
-    highScores.sort((a, b) => b.score - a.score);
-    highScores = highScores.slice(0, 5);
-
-    // 4. Зберігаємо
-    localStorage.setItem('seismic_leaderboard', JSON.stringify(highScores));
-
-    // 5. Відображаємо
-    ui.leaderboardList.innerHTML = "";
-    
-    // Якщо список порожній (нова гра), нічого не показуємо, або показуємо тільки поточного юзера
-    highScores.forEach(entry => {
-        const li = document.createElement('li');
-        li.innerHTML = `<span>${entry.name}</span> <span>${entry.score} pts</span>`;
-        if(entry.name === currentUser) li.classList.add('user-score');
-        ui.leaderboardList.appendChild(li);
-    });
+    // Генеруємо сертифікат
+    drawCertificate(rank);
 }
 
 function restartGame() {
-    screens.end.classList.remove('active');
-    screens.game.classList.add('active');
+    ui.end.classList.remove('active');
+    ui.game.classList.add('active');
     startGame();
 }
 
+// --- CERTIFICATE GENERATOR ---
+function drawCertificate(rank) {
+    const certCanvas = document.createElement('canvas');
+    certCanvas.width = 800;
+    certCanvas.height = 450;
+    const ctx = certCanvas.getContext('2d');
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 800, 450);
+    gradient.addColorStop(0, '#110022');
+    gradient.addColorStop(1, '#000000');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 450);
+
+    // Border
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(20, 20, 760, 410);
+
+    // Text Settings
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+
+    // Title
+    ctx.font = 'bold 40px monospace';
+    ctx.fillText("SEISMIC QUIZ CERTIFICATE", 400, 80);
+
+    // User
+    ctx.font = '30px monospace';
+    ctx.fillStyle = '#ccc';
+    ctx.fillText(`OPERATOR: ${currentUser}`, 400, 150);
+
+    // Score
+    ctx.font = 'bold 60px monospace';
+    ctx.fillStyle = '#a855f7';
+    ctx.shadowColor = "#a855f7";
+    ctx.shadowBlur = 15;
+    ctx.fillText(`${score} / 15`, 400, 250);
+    ctx.shadowBlur = 0;
+
+    // Rank Color Logic
+    let rankColor = '#ef4444'; // Red for Unranked
+    if(score >= 5) rankColor = '#facc15'; // Yellow for Novice
+    if(score >= 10) rankColor = '#22c55e'; // Green for Master
+    if(score === 15) rankColor = '#3b82f6'; // Blue/Cyan for Guru
+
+    // Rank Text
+    ctx.font = 'bold 40px monospace';
+    ctx.fillStyle = rankColor;
+    ctx.fillText(rank, 400, 330);
+
+    // Footer
+    ctx.font = '16px monospace';
+    ctx.fillStyle = '#666';
+    ctx.fillText("Authenticated by Seismic Protocol", 400, 400);
+
+    // Display image
+    const img = new Image();
+    img.src = certCanvas.toDataURL();
+    ui.certPreview.innerHTML = '';
+    ui.certPreview.appendChild(img);
+}
+
+function downloadCertificate() {
+    const link = document.createElement('a');
+    link.download = `Seismic_Certificate_${currentUser}.png`;
+    link.href = document.querySelector('#certificatePreview img').src;
+    link.click();
+}
+
 function shareResult() {
-    const text = `I hacked the Seismic Net as [${currentUser}] with ${score} PTS! 🛡️💻\nCan you beat my rank on the Leaderboard?\n\nPlay: https://alekshawk.github.io/seismic-tap-game/\n@SeismicSys`;
+    const rank = ui.finalRank.innerText;
+    const text = `I passed the Seismic Quiz as [${currentUser}]!\nScore: ${score}/15\nRank: ${rank}\n\nProve your knowledge: https://alekshawk.github.io/seismic-tap-game/\n@SeismicSys`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
 }
