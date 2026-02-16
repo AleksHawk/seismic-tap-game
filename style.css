@@ -19,21 +19,6 @@ body {
 #matrixCanvas { z-index: 0; opacity: 0.1; }
 #confettiCanvas { z-index: 50; }
 
-/* --- AUDIO BUTTON --- */
-#audioBtn {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid #a855f7;
-    color: white;
-    font-size: 24px;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 100;
-    border-radius: 5px;
-}
-#audioBtn:hover { background: #a855f7; }
-
 /* --- EFFECTS --- */
 .scanline {
     position: fixed;
