@@ -63,7 +63,7 @@ function playSound(type) {
 }
 
 
-// --- 3. QUESTION BANK (15 Random from 28) ---
+// --- 3. QUESTION BANK (Full List) ---
 const questionBank = [
     // Level 1: Basics
     { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
@@ -271,27 +271,25 @@ function restartGame() {
     startGame();
 }
 
-// --- NEW CERTIFICATE GENERATOR WITH LOGO ---
+// --- CERTIFICATE GENERATOR ---
 function drawCertificate(rank) {
-    // 1. Create High-Res Canvas
     const certCanvas = document.createElement('canvas');
-    certCanvas.width = 1200; // Twitter recommendation (16:9)
+    certCanvas.width = 1200; 
     certCanvas.height = 675;
     const ctx = certCanvas.getContext('2d');
 
-    // 2. Load Logo (stone.png)
     const logo = new Image();
-    logo.src = 'images/stone.png'; // Ensure file exists in folder
+    logo.src = 'images/stone.png'; 
 
     logo.onload = () => {
-        // --- A. BACKGROUND ---
+        // A. BACKGROUND
         const gradient = ctx.createLinearGradient(0, 0, 1200, 675);
-        gradient.addColorStop(0, '#0a0010'); // Dark Purple/Black
+        gradient.addColorStop(0, '#0a0010'); 
         gradient.addColorStop(1, '#000000');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 1200, 675);
 
-        // Add Grid Pattern
+        // Grid
         ctx.strokeStyle = 'rgba(168, 85, 247, 0.1)';
         ctx.lineWidth = 1;
         for(let i=0; i<1200; i+=50) {
@@ -301,20 +299,19 @@ function drawCertificate(rank) {
             ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(1200,j); ctx.stroke();
         }
 
-        // --- B. WATERMARK LOGO (Big & Transparent) ---
+        // B. WATERMARK
         ctx.save();
         ctx.globalAlpha = 0.15;
-        // Center the watermark
         const watermarkSize = 400;
         ctx.drawImage(logo, (1200-watermarkSize)/2, (675-watermarkSize)/2, watermarkSize, watermarkSize);
         ctx.restore();
 
-        // --- C. BORDER ---
+        // C. BORDER
         ctx.strokeStyle = '#a855f7';
         ctx.lineWidth = 15;
         ctx.strokeRect(30, 30, 1140, 615);
 
-        // --- D. TEXT CONTENT ---
+        // D. TEXT
         ctx.textAlign = 'center';
         
         // Title
@@ -325,7 +322,7 @@ function drawCertificate(rank) {
         ctx.fillText("SEISMIC QUIZ CERTIFICATE", 600, 120);
         ctx.shadowBlur = 0;
 
-        // User Label (CODENAME instead of OPERATOR)
+        // User
         ctx.font = '40px monospace';
         ctx.fillStyle = '#ccc';
         ctx.fillText(`CODENAME: ${currentUser}`, 600, 230);
@@ -335,7 +332,7 @@ function drawCertificate(rank) {
         ctx.fillStyle = '#fff';
         ctx.fillText(`${score} / 15`, 600, 380);
 
-        // Rank Logic colors
+        // Rank Logic
         let rankColor = '#ef4444'; 
         if(score >= 5) rankColor = '#facc15'; 
         if(score >= 10) rankColor = '#22c55e'; 
@@ -349,19 +346,18 @@ function drawCertificate(rank) {
         ctx.fillText(rank, 600, 500);
         ctx.shadowBlur = 0;
 
-        // Footer (Your Credit)
+        // Footer (Тут змінено!)
         ctx.font = '20px monospace';
         ctx.fillStyle = '#666';
-        ctx.fillText("creator: @hawk_tyt", 600, 600);
+        ctx.fillText("Creator: Hawk (@AleksYastreb)", 600, 600);
 
-        // --- E. UPDATE PREVIEW ---
+        // E. DISPLAY
         const finalImg = new Image();
         finalImg.src = certCanvas.toDataURL();
         ui.certPreview.innerHTML = '';
         ui.certPreview.appendChild(finalImg);
     };
 
-    // If logo fails or cached instantly
     if (logo.complete) logo.onload();
 }
 
@@ -377,7 +373,8 @@ function downloadCertificate() {
 
 function shareResult() {
     const rank = ui.finalRank.innerText;
-    const text = `I passed the Seismic Quiz as [${currentUser}]!\nScore: ${score}/15\nRank: ${rank}\n\nProve your knowledge: https://alekshawk.github.io/seismic-tap-game/\n@SeismicSys`;
+    // Оновлений текст для твіттера
+    const text = `Just passed the Seismic Quiz. 🧠\n\nUser: ${currentUser}\nScore: ${score}/15\nRank: ${rank}\n\nTry it here: https://alekshawk.github.io/seismic-tap-game/\n\nCreator: @AleksYastreb @SeismicSys`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
 }
