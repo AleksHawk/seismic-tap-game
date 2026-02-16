@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seismic Decoder: System Breach</title>
+    <title>Seismic Quiz Master</title>
     <link rel="icon" type="image/png" href="images/stone.png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -18,60 +18,60 @@
         
         <div id="loginScreen" class="screen active">
             <img src="images/stone.png" class="logo-pulse">
-            <h1 class="glitch" data-text="SEISMIC">SEISMIC</h1>
+            <h1 class="glitch" data-text="SEISMIC_QUIZ">SEISMIC_QUIZ</h1>
             
             <div class="mission-box">
-                <p class="mission-title">>> MISSION PROTOCOL <<</p>
+                <p class="mission-title">>> CERTIFICATION PROTOCOL <<</p>
                 <ul class="mission-list">
-                    <li>[1] DECRYPT DATA by answering questions.</li>
-                    <li>[2] SPEED MATTERS: Faster = More Points.</li>
-                    <li>[3] SYSTEM FAILURES: You have 3 Lives.</li>
+                    <li>[1] GOAL: Answer 28 technical questions.</li>
+                    <li>[2] TIME: Decreases with every level.</li>
+                    <li>[3] RANKS: Novice > Master > SEISMIC GURU.</li>
                 </ul>
             </div>
 
             <div class="login-box">
-                <p>IDENTIFY YOURSELF:</p>
-                <input type="text" id="usernameInput" placeholder="ENTER_CODENAME" maxlength="12" autocomplete="off">
-                <button class="btn-hack" onclick="submitLogin()">CONNECT_</button>
+                <p>ENTER OPERATOR NAME:</p>
+                <input type="text" id="usernameInput" placeholder="CODENAME" maxlength="12" autocomplete="off">
+                <button class="btn-hack" onclick="submitLogin()">START_EXAM_</button>
             </div>
         </div>
 
         <div id="gameScreen" class="screen">
             <div class="hud">
-                <div class="user-info">USER: <span id="displayUser">GUEST</span></div>
-                <div class="score">DATA: <span id="scoreVal">0</span>%</div>
+                <div class="user-info">OP: <span id="displayUser">GUEST</span></div>
+                <div class="score">SCORE: <span id="scoreVal">0</span></div>
             </div>
             
-            <div class="lives-bar" id="livesDisplay">🛡️ 🛡️ 🛡️</div>
+            <div class="lives-bar" id="livesDisplay">❤️❤️❤️</div>
 
             <div class="timer-container">
                 <div class="timer-bar" id="timerBar"></div>
             </div>
 
             <div class="question-box">
-                <div class="question-label">DECRYPTING SECTOR #<span id="qNum">1</span>...</div>
-                <h2 id="questionText">loading_data...</h2>
+                <div class="question-label">QUESTION <span id="qNum">1</span>/<span id="totalQ">28</span></div>
+                <h2 id="questionText">Initializing...</h2>
             </div>
 
             <div class="answers-grid" id="answersGrid"></div>
         </div>
 
         <div id="endScreen" class="screen">
-            <h1 id="endTitle">CONNECTION LOST</h1>
+            <h1 id="endTitle">EXAM FINISHED</h1>
             
             <div class="result-box">
-                <p>FINAL SCORE: <span id="finalScore" class="highlight">0</span></p>
-                <p>RANK: <span id="finalRank">NOOB</span></p>
+                <p>CORRECT ANSWERS: <span id="finalScore" class="highlight">0</span></p>
+                <p>STATUS: <span id="finalRank">UNRANKED</span></p>
             </div>
 
-            <div class="leaderboard">
-                <h3>LOCAL DATABASE</h3>
-                <ul id="leaderboardList"></ul>
+            <div id="certificatePreview">
+                <p>Generating Certificate...</p>
             </div>
 
             <div class="btn-group">
-                <button class="btn-hack" onclick="restartGame()">RETRY_</button>
-                <button class="btn-share" onclick="shareResult()">BROADCAST_</button>
+                <button class="btn-hack" onclick="downloadCertificate()">DOWNLOAD IMG ⬇</button>
+                <button class="btn-share" onclick="shareResult()">SHARE ON X 🚀</button>
+                <button class="btn-retry" onclick="restartGame()">RETRY ↻</button>
             </div>
         </div>
 
