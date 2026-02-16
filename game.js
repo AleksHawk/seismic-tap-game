@@ -30,48 +30,15 @@ function drawMatrix() {
 }
 setInterval(drawMatrix, 40);
 
-// --- 2. AUDIO SYSTEM (AMBIENT & SFX) ---
+// --- 2. AUDIO SYSTEM (ONLY SFX) ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let ambientOsc = null;
-let ambientGain = null;
 let isMuted = true;
-
-function initAmbient() {
-    if(ambientOsc) return; 
-    // Create a low drone sound (Cyberpunk ambience)
-    ambientOsc = audioCtx.createOscillator();
-    ambientGain = audioCtx.createGain();
-    
-    ambientOsc.type = 'sawtooth';
-    ambientOsc.frequency.value = 50; // Low frequency
-    
-    // Lowpass filter to make it "deep" and not annoying
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 200;
-
-    ambientOsc.connect(filter);
-    filter.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
-    
-    ambientGain.gain.value = 0; // Start silent
-    ambientOsc.start();
-}
 
 function toggleAudio() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    if(!ambientOsc) initAmbient();
-
     const btn = document.getElementById('audioBtn');
     isMuted = !isMuted;
-
-    if(!isMuted) {
-        btn.innerText = "🔊";
-        ambientGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 1); // Fade in to 5% volume
-    } else {
-        btn.innerText = "🔇";
-        ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5); // Fade out
-    }
+    btn.innerText = isMuted ? "🔇" : "🔊";
 }
 
 function playSound(type) {
@@ -112,28 +79,28 @@ function playSound(type) {
 }
 
 
-// --- 3. QUESTION BANK (With Explanations) ---
+// --- 3. QUESTION BANK ---
 const questionBank = [
-    { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1, exp: "Seismic is a Layer-1 blockchain specifically designed to integrate privacy at the protocol level." },
-    { q: "What is Seismic's main mission?", a: ["1GB Block Size", "Encrypt All Chains", "Zero Gas Fees", "New Social Network"], correct: 1, exp: "Seismic aims to enable 'Encrypt All Chains' via its modular privacy stack." },
-    { q: "Which tech provides hardware protection?", a: ["Intel TDX (Secure Enclaves)", "Raspberry Pi", "Google TPU", "NVIDIA RTX"], correct: 0, exp: "Seismic utilizes Intel TDX to create Secure Enclaves that protect data during execution." },
-    { q: "Is Seismic EVM compatible?", a: ["No, new language", "Yes, modified EVM + stype", "Read-only", "Only via bridges"], correct: 1, exp: "It uses a modified EVM that supports Solidity but adds 'stype' for private variables." },
-    { q: "Who is the lead investor?", a: ["MicroStrategy", "a16z crypto", "Tesla", "Binance Labs"], correct: 1, exp: "Andreessen Horowitz (a16z crypto) led both funding rounds." },
-    { q: "What are the two memory segments?", a: ["Red & Blue", "Transparent & Encrypted", "Public & Private", "Fast & Slow"], correct: 1, exp: "Memory is divided into 'Transparent' (public) and 'Encrypted' (private)." },
-    { q: "Best use case for Seismic?", a: ["Meme coins", "Private DeFi / Dark Pools", "Static Sites", "Music Streaming"], correct: 1, exp: "It is ideal for financial apps like Dark Pools where trade data must be hidden." },
-    { q: "Encrypted Global State allows...", a: ["Seeing all balances", "Composability without leaks", "Mobile Mining", "Deleting History"], correct: 1, exp: "It enables dApps to interact (composability) without revealing underlying private data." },
-    { q: "Consensus mechanism?", a: ["Proof of Work", "CometBFT (PoS)", "Proof of Space", "Proof of Authority"], correct: 1, exp: "Seismic uses CometBFT, a Proof-of-Stake engine based on Tendermint." },
-    { q: "Instruction to LOAD encrypted data?", a: ["ELOAD", "CLOAD (Cipher Load)", "SECRET_LOAD", "HIDE_READ"], correct: 1, exp: "CLOAD (Cipher Load) is the opcode used to retrieve encrypted data." },
-    { q: "Execution client based on?", a: ["Geth", "Reth (Rust)", "Besu", "Erigon"], correct: 1, exp: "Seismic is built on a fork of Reth (Rust Ethereum)." },
-    { q: "How is Solidity modified?", a: ["Zinc", "SeisSol", "Adds 'stype' (secure type)", "Vyper++"], correct: 2, exp: "It adds 'stype' (secure type) to standard Solidity for private data handling." },
-    { q: "Data inside Secure Enclave during execution?", a: ["Becomes public", "Decrypt -> Process -> Encrypt", "Sent to validators", "Deleted"], correct: 1, exp: "Data is decrypted, processed, and immediately re-encrypted inside the hardware enclave." },
-    { q: "Can a contract have hybrid state?", a: ["No", "Yes, Public & Private", "Double Fee Only", "Testnet Only"], correct: 1, exp: "Yes, contracts can manage both transparent and encrypted states simultaneously." },
-    { q: "Role of Sequencers?", a: ["Music", "Encrypt txs & connect chains", "Visualization", "Token Name"], correct: 1, exp: "Sequencers encrypt transactions and facilitate connections to other chains." },
-    { q: "Testing framework?", a: ["Hardhat", "Foundry fork + encryption", "Truffle", "Remix"], correct: 1, exp: "Developers use a modified version of Foundry that supports encrypted storage." },
-    { q: "Protection against MEV?", a: ["Encrypted Mempool", "Ban Bots", "Higher Fees", "Central Server"], correct: 0, exp: "An encrypted mempool hides transactions until they are executed, preventing front-running." },
-    { q: "Encrypted Memory Access?", a: ["PC Password", "Manipulate arrays securely", "USB Encrypt", "Screen Encrypt"], correct: 1, exp: "It allows manipulation of data structures like arrays without leaking access patterns." },
-    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1, exp: "Seismic raised roughly $17M ($7M Seed + $10M Series A)." },
-    { q: "App for restaurant revenue share?", a: ["Nibble", "Bite", "Chef", "Menu"], correct: 0, exp: "Nibble is the example app for revenue-sharing loyalty." }
+    { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
+    { q: "What is Seismic's main mission?", a: ["1GB Block Size", "Encrypt All Chains", "Zero Gas Fees", "New Social Network"], correct: 1 },
+    { q: "Which tech provides hardware protection?", a: ["Intel TDX (Secure Enclaves)", "Raspberry Pi", "Google TPU", "NVIDIA RTX"], correct: 0 },
+    { q: "Is Seismic EVM compatible?", a: ["No, new language", "Yes, modified EVM + stype", "Read-only", "Only via bridges"], correct: 1 },
+    { q: "Who is the lead investor?", a: ["MicroStrategy", "a16z crypto", "Tesla", "Binance Labs"], correct: 1 },
+    { q: "What are the two memory segments?", a: ["Red & Blue", "Transparent & Encrypted", "Public & Private", "Fast & Slow"], correct: 1 },
+    { q: "Best use case for Seismic?", a: ["Meme coins", "Private DeFi / Dark Pools", "Static Sites", "Music Streaming"], correct: 1 },
+    { q: "Encrypted Global State allows...", a: ["Seeing all balances", "Composability without leaks", "Mobile Mining", "Deleting History"], correct: 1 },
+    { q: "Consensus mechanism?", a: ["Proof of Work", "CometBFT (PoS)", "Proof of Space", "Proof of Authority"], correct: 1 },
+    { q: "Instruction to LOAD encrypted data?", a: ["ELOAD", "CLOAD (Cipher Load)", "SECRET_LOAD", "HIDE_READ"], correct: 1 },
+    { q: "Execution client based on?", a: ["Geth", "Reth (Rust)", "Besu", "Erigon"], correct: 1 },
+    { q: "How is Solidity modified?", a: ["Zinc", "SeisSol", "Adds 'stype' (secure type)", "Vyper++"], correct: 2 },
+    { q: "Data inside Secure Enclave during execution?", a: ["Becomes public", "Decrypt -> Process -> Encrypt", "Sent to validators", "Deleted"], correct: 1 },
+    { q: "Can a contract have hybrid state?", a: ["No", "Yes, Public & Private", "Double Fee Only", "Testnet Only"], correct: 1 },
+    { q: "Role of Sequencers?", a: ["Music", "Encrypt txs & connect chains", "Visualization", "Token Name"], correct: 1 },
+    { q: "Testing framework?", a: ["Hardhat", "Foundry fork + encryption", "Truffle", "Remix"], correct: 1 },
+    { q: "Protection against MEV?", a: ["Encrypted Mempool", "Ban Bots", "Higher Fees", "Central Server"], correct: 0 },
+    { q: "Encrypted Memory Access?", a: ["PC Password", "Manipulate arrays securely", "USB Encrypt", "Screen Encrypt"], correct: 1 },
+    { q: "Total funding (approx)?", a: ["$7M", "$17M", "$1B", "$0"], correct: 1 },
+    { q: "App for restaurant revenue share?", a: ["Nibble", "Bite", "Chef", "Menu"], correct: 0 }
 ];
 
 
@@ -152,8 +119,6 @@ const ui = {
     login: document.getElementById('loginScreen'),
     game: document.getElementById('gameScreen'),
     end: document.getElementById('endScreen'),
-    modal: document.getElementById('explanationModal'),
-    expText: document.getElementById('explanationText'),
     userDisplay: document.getElementById('displayUser'),
     scoreVal: document.getElementById('scoreVal'),
     lives: document.getElementById('livesDisplay'),
@@ -173,8 +138,10 @@ function submitLogin() {
     const name = input.value.trim().toUpperCase();
     if(name.length > 0) {
         currentUser = name;
-        // Start Audio on interaction
-        toggleAudio(); 
+        toggleAudio(); // Start allowing audio (but muted by default until user toggles if they want)
+        // Note: isMuted is TRUE by default. 
+        // If you want sound ON by default, change `let isMuted = true` to `false` above,
+        // and in toggleAudio check logic. But removing drone means we just rely on SFX.
         
         ui.login.classList.remove('active');
         ui.game.classList.add('active');
@@ -188,7 +155,6 @@ function startGame() {
     score = 0;
     lives = 3;
     currentQIndex = 0;
-    // Pick 15 random
     shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 15);
     
     ui.userDisplay.innerText = currentUser;
@@ -245,7 +211,7 @@ function startTimer() {
 
         if(timeLeft <= 0) {
             clearInterval(timer);
-            handleWrong(false, true); // Time out = wrong
+            handleWrong();
         }
     }, 50);
 }
@@ -267,27 +233,22 @@ function checkAnswer(selected, correct) {
         playSound('wrong');
         btns[selected].classList.add('ans-wrong');
         btns[correct].classList.add('ans-correct');
-        handleWrong(true, false); // Wrong click
+        handleWrong();
     }
 }
 
-function handleWrong(clicked, timeout) {
+function handleWrong() {
     lives--;
     updateLives();
     
-    // Show explanation modal
-    const qData = shuffledQuestions[currentQIndex];
-    ui.expText.innerText = timeout ? "TIME OUT! " + qData.exp : qData.exp;
-    ui.modal.style.display = 'flex';
-}
+    // Shake effect
+    document.body.classList.add('shake');
+    setTimeout(() => document.body.classList.remove('shake'), 400);
 
-function closeExplanation() {
-    playSound('click');
-    ui.modal.style.display = 'none';
     if(lives <= 0) {
-        endGame();
+        setTimeout(endGame, 1000);
     } else {
-        nextQuestion();
+        setTimeout(nextQuestion, 1000);
     }
 }
 
@@ -297,7 +258,7 @@ function nextQuestion() {
 }
 
 function endGame() {
-    triggerConfetti(); // Celebrate!
+    triggerConfetti(); // Celebrate
     ui.game.classList.remove('active');
     ui.end.classList.add('active');
     ui.finalScore.innerText = score + "/15";
@@ -430,7 +391,6 @@ function downloadCertificate() {
 
 function shareResult() {
     const rank = ui.finalRank.innerText;
-    // Updated text format
     const text = `I just crushed the Seismic Quiz!\nMy Score: ${score}/15\nRank: ${rank}\n\nI bet you can't beat my score. Prove your knowledge regarding privacy & encryption.\n\n🔗 Play here: https://alekshawk.github.io/Seismic-Quiz-Master/\nbuilt by: @AleksYastreb for @SeismicSys`;
     
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
