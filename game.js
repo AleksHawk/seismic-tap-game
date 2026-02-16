@@ -63,7 +63,7 @@ function playSound(type) {
 }
 
 
-// --- 3. QUESTION BANK (FULL 28 QUESTIONS) ---
+// --- 3. QUESTION BANK (15 Random from 28) ---
 const questionBank = [
     // Level 1: Basics
     { q: "What is Seismic?", a: ["Layer-2 for Bitcoin", "Privacy-enabled Layer-1 for fintech", "Centralized Exchange", "NFT Wallet"], correct: 1 },
@@ -151,14 +151,12 @@ function startGame() {
     lives = 3;
     currentQIndex = 0;
     
-    // 1. Беремо всі питання
-    // 2. Перемішуємо
-    // 3. Відрізаємо тільки перші 15
+    // Pick 15 random questions
     shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 15);
     
     ui.userDisplay.innerText = currentUser;
     ui.scoreVal.innerText = score;
-    ui.totalQ.innerText = shuffledQuestions.length; // Покаже 15
+    ui.totalQ.innerText = shuffledQuestions.length;
     
     updateLives();
     loadQuestion();
@@ -195,7 +193,6 @@ function loadQuestion() {
 
 function startTimer() {
     clearInterval(timer);
-    // Часу стає менше під кінець гри
     let duration = Math.max(5, startMaxTime - (currentQIndex * 0.5));
     timeLeft = duration;
     
@@ -257,7 +254,6 @@ function endGame() {
     ui.end.classList.add('active');
     ui.finalScore.innerText = score + "/15";
 
-    // --- НОВА ЛОГІКА РАНГІВ ---
     let rank = "UNRANKED ❌";
     if(score >= 5) rank = "SEISMIC NOVICE 👶";
     if(score >= 10) rank = "SEISMIC MASTER 🧠";
@@ -265,7 +261,7 @@ function endGame() {
     
     ui.finalRank.innerText = rank;
     
-    // Генеруємо сертифікат
+    // Generate new Certificate
     drawCertificate(rank);
 }
 
@@ -275,74 +271,108 @@ function restartGame() {
     startGame();
 }
 
-// --- CERTIFICATE GENERATOR ---
+// --- NEW CERTIFICATE GENERATOR WITH LOGO ---
 function drawCertificate(rank) {
+    // 1. Create High-Res Canvas
     const certCanvas = document.createElement('canvas');
-    certCanvas.width = 800;
-    certCanvas.height = 450;
+    certCanvas.width = 1200; // Twitter recommendation (16:9)
+    certCanvas.height = 675;
     const ctx = certCanvas.getContext('2d');
 
-    // Background
-    const gradient = ctx.createLinearGradient(0, 0, 800, 450);
-    gradient.addColorStop(0, '#110022');
-    gradient.addColorStop(1, '#000000');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 800, 450);
+    // 2. Load Logo (stone.png)
+    const logo = new Image();
+    logo.src = 'images/stone.png'; // Ensure file exists in folder
 
-    // Border
-    ctx.strokeStyle = '#a855f7';
-    ctx.lineWidth = 10;
-    ctx.strokeRect(20, 20, 760, 410);
+    logo.onload = () => {
+        // --- A. BACKGROUND ---
+        const gradient = ctx.createLinearGradient(0, 0, 1200, 675);
+        gradient.addColorStop(0, '#0a0010'); // Dark Purple/Black
+        gradient.addColorStop(1, '#000000');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1200, 675);
 
-    // Text Settings
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'center';
+        // Add Grid Pattern
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.1)';
+        ctx.lineWidth = 1;
+        for(let i=0; i<1200; i+=50) {
+            ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,675); ctx.stroke();
+        }
+        for(let j=0; j<675; j+=50) {
+            ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(1200,j); ctx.stroke();
+        }
 
-    // Title
-    ctx.font = 'bold 40px monospace';
-    ctx.fillText("SEISMIC QUIZ CERTIFICATE", 400, 80);
+        // --- B. WATERMARK LOGO (Big & Transparent) ---
+        ctx.save();
+        ctx.globalAlpha = 0.15;
+        // Center the watermark
+        const watermarkSize = 400;
+        ctx.drawImage(logo, (1200-watermarkSize)/2, (675-watermarkSize)/2, watermarkSize, watermarkSize);
+        ctx.restore();
 
-    // User
-    ctx.font = '30px monospace';
-    ctx.fillStyle = '#ccc';
-    ctx.fillText(`OPERATOR: ${currentUser}`, 400, 150);
+        // --- C. BORDER ---
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 15;
+        ctx.strokeRect(30, 30, 1140, 615);
 
-    // Score
-    ctx.font = 'bold 60px monospace';
-    ctx.fillStyle = '#a855f7';
-    ctx.shadowColor = "#a855f7";
-    ctx.shadowBlur = 15;
-    ctx.fillText(`${score} / 15`, 400, 250);
-    ctx.shadowBlur = 0;
+        // --- D. TEXT CONTENT ---
+        ctx.textAlign = 'center';
+        
+        // Title
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 60px monospace';
+        ctx.shadowColor = "#a855f7";
+        ctx.shadowBlur = 20;
+        ctx.fillText("SEISMIC QUIZ CERTIFICATE", 600, 120);
+        ctx.shadowBlur = 0;
 
-    // Rank Color Logic
-    let rankColor = '#ef4444'; // Red for Unranked
-    if(score >= 5) rankColor = '#facc15'; // Yellow for Novice
-    if(score >= 10) rankColor = '#22c55e'; // Green for Master
-    if(score === 15) rankColor = '#3b82f6'; // Blue/Cyan for Guru
+        // User Label (CODENAME instead of OPERATOR)
+        ctx.font = '40px monospace';
+        ctx.fillStyle = '#ccc';
+        ctx.fillText(`CODENAME: ${currentUser}`, 600, 230);
 
-    // Rank Text
-    ctx.font = 'bold 40px monospace';
-    ctx.fillStyle = rankColor;
-    ctx.fillText(rank, 400, 330);
+        // Score
+        ctx.font = 'bold 100px monospace';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${score} / 15`, 600, 380);
 
-    // Footer
-    ctx.font = '16px monospace';
-    ctx.fillStyle = '#666';
-    ctx.fillText("Authenticated by Seismic Protocol", 400, 400);
+        // Rank Logic colors
+        let rankColor = '#ef4444'; 
+        if(score >= 5) rankColor = '#facc15'; 
+        if(score >= 10) rankColor = '#22c55e'; 
+        if(score === 15) rankColor = '#3b82f6';
 
-    // Display image
-    const img = new Image();
-    img.src = certCanvas.toDataURL();
-    ui.certPreview.innerHTML = '';
-    ui.certPreview.appendChild(img);
+        // Rank
+        ctx.font = 'bold 60px monospace';
+        ctx.fillStyle = rankColor;
+        ctx.shadowColor = rankColor;
+        ctx.shadowBlur = 15;
+        ctx.fillText(rank, 600, 500);
+        ctx.shadowBlur = 0;
+
+        // Footer (Your Credit)
+        ctx.font = '20px monospace';
+        ctx.fillStyle = '#666';
+        ctx.fillText("creator: @hawk_tyt", 600, 600);
+
+        // --- E. UPDATE PREVIEW ---
+        const finalImg = new Image();
+        finalImg.src = certCanvas.toDataURL();
+        ui.certPreview.innerHTML = '';
+        ui.certPreview.appendChild(finalImg);
+    };
+
+    // If logo fails or cached instantly
+    if (logo.complete) logo.onload();
 }
 
 function downloadCertificate() {
     const link = document.createElement('a');
     link.download = `Seismic_Certificate_${currentUser}.png`;
-    link.href = document.querySelector('#certificatePreview img').src;
-    link.click();
+    const img = document.querySelector('#certificatePreview img');
+    if(img) {
+        link.href = img.src;
+        link.click();
+    }
 }
 
 function shareResult() {
